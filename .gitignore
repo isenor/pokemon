@@ -3,4 +3,5 @@
 .scannerwork/**
 .sonarlint/**
 sonar-project.properties
-
+**/.classpath
+**/*.class

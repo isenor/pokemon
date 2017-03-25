@@ -1,9 +1,14 @@
 package ca.isenor.pokemontcg.controller;
 
+import java.util.Scanner;
+
 import ca.isenor.pokemontcg.model.Model;
 import ca.isenor.pokemontcg.player.Player;
+import ca.isenor.pokemontcg.player.cards.Card;
+import ca.isenor.pokemontcg.player.cards.CardType;
 import ca.isenor.pokemontcg.player.cards.energy.fire.BasicFireEnergy;
 import ca.isenor.pokemontcg.player.cards.energy.water.BasicWaterEnergy;
+import ca.isenor.pokemontcg.player.cards.pokemon.Pokemon;
 import ca.isenor.pokemontcg.player.cards.pokemon.fire.Charmander;
 import ca.isenor.pokemontcg.player.cards.pokemon.fire.Fennekin;
 import ca.isenor.pokemontcg.player.cards.pokemon.water.Froakie;
@@ -17,6 +22,7 @@ public class Controller {
 	private Controller() {}
 
 	public static void main(String[] args) {
+		Scanner keyboard = new Scanner(System.in);
 
 		Deck fire = new Deck();
 		fire.putOnTop(new Charmander());
@@ -58,8 +64,19 @@ public class Controller {
 		Model gameModel = new Model(playerA, playerB);
 		View view = new View(gameModel);
 
+
 		gameModel.initGame();
-		view.displayField();
+		//		playerA.setActive(active);
+		view.displayHand(playerA.getHand());
+
+		selectActive(playerA,view);
+
+		selectActive(playerB,view);
+
+
+
+
+
 
 
 		boolean proceed = true;
@@ -78,6 +95,34 @@ public class Controller {
 		} while (proceed);
 
 
+	}
+
+	/**
+	 * At the beginning of the game, a player must choose a basic Pokemon from his/her hand
+	 * to be the starting active Pokemon.
+	 *
+	 * @param player
+	 * @param view
+	 */
+	private static void selectActive(Player player, View view) {
+		view.print(player.getName() + ": Pick a basic Pokemon to be your active Pokemon.");
+		Scanner keyboard = new Scanner(System.in);
+		String input;
+		boolean success = false;
+		do {
+			input = keyboard.nextLine();
+			int pickIndex = Integer.parseInt(input);
+			Card pickCard = player.getHand().getCard(pickIndex);
+			if (pickCard.getCardType() == CardType.POKEMON) {
+				player.setActive((Pokemon)pickCard);
+				success = true;
+			}
+			else {
+				view.print(player.getName() + ": " + pickCard.getName() + " is not a Basic Pokemon.");
+			}
+
+		} while (!input.startsWith("done") && !success);
+		keyboard.close();
 	}
 
 }

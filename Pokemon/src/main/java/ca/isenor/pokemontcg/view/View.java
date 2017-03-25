@@ -45,7 +45,7 @@ public class View {
 	 *
 	 * @param hand
 	 */
-	private void displayHand(Hand hand) {
+	public void displayHand(Hand hand) {
 		System.out.println();
 		for(int i = 0; i < hand.size(); i++ ) {
 			System.out.println("(" + i + ") " +
@@ -53,7 +53,11 @@ public class View {
 		}
 	}
 
-	private void displayCard(Card card) {
+	public void displayCard(Card card) {
 		System.out.println(card);
+	}
+
+	public void print(String message) {
+		System.out.println(message);
 	}
 }
