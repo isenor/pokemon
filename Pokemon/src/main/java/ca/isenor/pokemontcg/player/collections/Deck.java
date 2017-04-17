@@ -1,5 +1,6 @@
 package ca.isenor.pokemontcg.player.collections;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -10,11 +11,17 @@ import ca.isenor.pokemontcg.player.cards.Card;
  * @author dawud
  *
  */
-public class Deck {
-	private LinkedList<Card> deck;
+public class Deck implements Serializable {
+	/**
+	 *  I don't know what this does
+	 */
+	private static final long serialVersionUID = 7353499510527836691L;
+
+
+	private LinkedList<Card> cards;
 
 	public Deck() {
-		deck = new LinkedList<>();
+		cards = new LinkedList<>();
 	}
 
 	/**
@@ -22,22 +29,22 @@ public class Deck {
 	 */
 	public void shuffle() {
 		Random gen = new Random();
-		for(int i = 0 ; i < deck.size() * 100 ; i++) {
-			int index = gen.nextInt(deck.size());
+		for(int i = 0 ; i < cards.size() * 100 ; i++) {
+			int index = gen.nextInt(cards.size());
 			putOnTop(remove(index));
 		}
 	}
 
 	private Card remove(int index) {
-		return deck.remove(index);
+		return cards.remove(index);
 	}
 
 	public void putOnTop(Card card) {
-		deck.addFirst(card);
+		cards.addFirst(card);
 	}
 
 	public void putOnBottom(Card card) {
-		deck.addLast(card);
+		cards.addLast(card);
 	}
 
 	/**
@@ -45,13 +52,22 @@ public class Deck {
 	 * @return true if the deck follows the rules; false otherwise
 	 */
 	public boolean isValid() {
-		return deck.size() > 7;
+		return cards.size() > 7;
 	}
 
 	/**
 	 * @return a card from the top of the deck
 	 */
 	public Card draw() {
-		return deck.removeFirst();
+		return cards.removeFirst();
+	}
+
+	public int size() {
+		return cards.size();
+	}
+
+	@Override
+	public String toString() {
+		return "Deck [cards=" + cards + "]";
 	}
 }

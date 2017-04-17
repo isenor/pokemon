@@ -2,15 +2,37 @@ package ca.isenor.pokemontcg.model;
 
 import ca.isenor.pokemontcg.player.Player;
 
-public class Model {
+public class GameModel {
 	private int turn;
 	private Player playerA;
 	private Player playerB;
 
-	public Model(Player a, Player b) {
+	public GameModel(Player a, Player b) {
 		turn = 0;
 		playerA = a;
 		playerB = b;
+	}
+
+	public GameModel() {
+
+	}
+
+	public void setPlayer(Player player, int playerNumber) {
+		if (playerNumber == 0) {
+			playerA = player;
+		}
+		else if (playerNumber == 1){
+			playerB = player;
+		}
+	}
+
+	public Player getPlayer(int playerNumber) {
+		if (playerNumber == 0) {
+			return playerA;
+		}
+		else {
+			return playerB;
+		}
 	}
 
 	public void initGame() {

@@ -1,5 +1,6 @@
 package ca.isenor.pokemontcg.player.collections;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import ca.isenor.pokemontcg.player.cards.Card;
@@ -10,7 +11,11 @@ import ca.isenor.pokemontcg.player.cards.Card;
  * @author dawud
  *
  */
-public class PrizeCards {
+public class PrizeCards implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -3582028170191430906L;
 	private ArrayList<Card> prizes;
 	private int maxPrizes;
 

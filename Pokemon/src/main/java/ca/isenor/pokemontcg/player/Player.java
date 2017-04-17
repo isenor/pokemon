@@ -1,5 +1,7 @@
 package ca.isenor.pokemontcg.player;
 
+import java.io.Serializable;
+
 import ca.isenor.pokemontcg.player.cards.pokemon.Pokemon;
 import ca.isenor.pokemontcg.player.collections.Bench;
 import ca.isenor.pokemontcg.player.collections.Deck;
@@ -12,7 +14,11 @@ import ca.isenor.pokemontcg.player.collections.PrizeCards;
  * @author dawud
  *
  */
-public class Player {
+public class Player implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -1672656679446606781L;
 	private String name;
 	private Deck deck;
 	private Hand hand;
@@ -38,6 +44,10 @@ public class Player {
 		draw();
 		draw();
 		draw();
+	}
+
+	public PrizeCards getPrizeCards() {
+		return prizeCards;
 	}
 
 	public void setPrizeCards() {

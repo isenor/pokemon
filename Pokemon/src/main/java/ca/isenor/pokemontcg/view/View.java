@@ -1,6 +1,6 @@
 package ca.isenor.pokemontcg.view;
 
-import ca.isenor.pokemontcg.model.Model;
+import ca.isenor.pokemontcg.model.GameModel;
 import ca.isenor.pokemontcg.player.Player;
 import ca.isenor.pokemontcg.player.cards.Card;
 import ca.isenor.pokemontcg.player.collections.Hand;
@@ -12,9 +12,9 @@ import ca.isenor.pokemontcg.player.collections.Hand;
  *
  */
 public class View {
-	private Model gameModel;
+	private GameModel gameModel;
 
-	public View(Model gameModel) {
+	public View(GameModel gameModel) {
 		this.gameModel = gameModel;
 	}
 

@@ -2,7 +2,7 @@ package ca.isenor.pokemontcg.controller;
 
 import java.util.Scanner;
 
-import ca.isenor.pokemontcg.model.Model;
+import ca.isenor.pokemontcg.model.GameModel;
 import ca.isenor.pokemontcg.player.Player;
 import ca.isenor.pokemontcg.player.cards.Card;
 import ca.isenor.pokemontcg.player.cards.CardType;
@@ -18,10 +18,8 @@ import ca.isenor.pokemontcg.view.View;
 
 public class Controller {
 
-	// Prevent Instantiation
-	private Controller() {}
 
-	public static void main(String[] args) {
+	public void init() {
 		Scanner keyboard = new Scanner(System.in);
 
 		Deck fire = new Deck();
@@ -61,17 +59,18 @@ public class Controller {
 		Player playerB = new Player("Misty", water);
 		// TODO: make random assignment of first player (no rush)
 		Player curr = playerA;
-		Model gameModel = new Model(playerA, playerB);
+		GameModel gameModel = new GameModel(playerA, playerB);
 		View view = new View(gameModel);
 
 
+
 		gameModel.initGame();
-		//		playerA.setActive(active);
+
 		view.displayHand(playerA.getHand());
+		selectActive(playerA,view,keyboard);
 
-		selectActive(playerA,view);
-
-		selectActive(playerB,view);
+		view.displayHand(playerB.getHand());
+		selectActive(playerB,view,keyboard);
 
 
 
@@ -95,6 +94,7 @@ public class Controller {
 		} while (proceed);
 
 
+
 	}
 
 	/**
@@ -104,25 +104,28 @@ public class Controller {
 	 * @param player
 	 * @param view
 	 */
-	private static void selectActive(Player player, View view) {
-		view.print(player.getName() + ": Pick a basic Pokemon to be your active Pokemon.");
-		Scanner keyboard = new Scanner(System.in);
+	private static void selectActive(Player player, View view, Scanner keyboard) {
+
 		String input;
 		boolean success = false;
 		do {
+			view.print(player.getName() + ": Pick a basic Pokemon to be your active Pokemon.");
 			input = keyboard.nextLine();
 			int pickIndex = Integer.parseInt(input);
-			Card pickCard = player.getHand().getCard(pickIndex);
-			if (pickCard.getCardType() == CardType.POKEMON) {
-				player.setActive((Pokemon)pickCard);
-				success = true;
+			if (pickIndex >= 0 && pickIndex < player.getHand().size()) {
+				Card pickCard = player.getHand().getCard(pickIndex);
+				if (pickCard.getCardType() == CardType.POKEMON) {
+					player.setActive((Pokemon)pickCard);
+					success = true;
+					view.print(player.getName() + ": Picked " + player.getActive().getName() + " to be the starting active Pokemon.");
+				}
+				else {
+					view.print(player.getName() + ": " + pickCard.getName() + " is not a Basic Pokemon.");
+				}
+			} else {
+				view.print(player.getName() + ": " + pickIndex + " is an invalid entry.");
 			}
-			else {
-				view.print(player.getName() + ": " + pickCard.getName() + " is not a Basic Pokemon.");
-			}
-
 		} while (!input.startsWith("done") && !success);
-		keyboard.close();
 	}
 
 }

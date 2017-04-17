@@ -2,6 +2,10 @@
 .recommenders/**
 .scannerwork/**
 .sonarlint/**
+**/.settings/**
+**/.gradle/**
+**/.project
+**/build/**
 sonar-project.properties
 **/.classpath
 **/*.class

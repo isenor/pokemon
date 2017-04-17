@@ -1,5 +1,6 @@
 package ca.isenor.pokemontcg.player.collections;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
 import ca.isenor.pokemontcg.player.cards.pokemon.Pokemon;
@@ -9,7 +10,11 @@ import ca.isenor.pokemontcg.player.cards.pokemon.Pokemon;
  * @author dawud
  *
  */
-public class Bench {
+public class Bench implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -4685486583007035960L;
 	private LinkedList<Pokemon> bench;
 	private int maxSize;
 

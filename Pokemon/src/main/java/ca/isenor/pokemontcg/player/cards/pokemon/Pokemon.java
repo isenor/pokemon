@@ -1,5 +1,6 @@
 package ca.isenor.pokemontcg.player.cards.pokemon;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
 import ca.isenor.pokemontcg.player.cards.Card;
@@ -8,7 +9,12 @@ import ca.isenor.pokemontcg.player.cards.Stage;
 import ca.isenor.pokemontcg.player.cards.Type;
 import ca.isenor.pokemontcg.player.cards.energy.Energy;
 
-public abstract class Pokemon implements Card {
+public abstract class Pokemon implements Card, Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 5432201733525003969L;
+
 	private static final CardType cardType = CardType.POKEMON;
 
 	private String name;
@@ -118,8 +124,6 @@ public abstract class Pokemon implements Card {
 
 	@Override
 	public String toString() {
-		return "Pokemon [cardType=" + cardType + ", name=" + name + ", hitPoints=" + hitPoints + ", damage=" + damage
-				+ ", retreatCost=" + retreatCost + ", type=" + type + ", weakness=" + weakness + ", resistance="
-				+ resistance + ", stage=" + stage + ", attachedEnergy=" + attachedEnergy + "]";
+		return "Pokemon [name=" + name + "]";
 	}
 }

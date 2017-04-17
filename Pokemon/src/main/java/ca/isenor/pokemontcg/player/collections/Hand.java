@@ -1,5 +1,6 @@
 package ca.isenor.pokemontcg.player.collections;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -8,23 +9,27 @@ import ca.isenor.pokemontcg.player.cards.CardType;
 import ca.isenor.pokemontcg.player.cards.Stage;
 import ca.isenor.pokemontcg.player.cards.pokemon.Pokemon;
 
-public class Hand {
-	private LinkedList<Card> hand;
+public class Hand implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 5307908749382498143L;
+	private LinkedList<Card> cards;
 
 	public Hand() {
-		hand = new LinkedList<>();
+		cards = new LinkedList<>();
 	}
 
 	public void add(Card card) {
-		hand.add(card);
+		cards.add(card);
 	}
 
 	public Card getCard(int index) {
-		return hand.get(index);
+		return cards.get(index);
 	}
 
 	public int size() {
-		return hand.size();
+		return cards.size();
 	}
 
 	/**
@@ -32,7 +37,7 @@ public class Hand {
 	 */
 	public boolean hasBasic() {
 		boolean basicExists = false;
-		Iterator<Card> iterator = hand.iterator();
+		Iterator<Card> iterator = cards.iterator();
 		do {
 			Card curr = iterator.next();
 			if (curr.getCardType() == CardType.POKEMON && ((Pokemon)curr).getStage() == Stage.BASIC) {

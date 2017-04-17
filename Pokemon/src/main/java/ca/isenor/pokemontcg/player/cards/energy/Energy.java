@@ -1,10 +1,17 @@
 package ca.isenor.pokemontcg.player.cards.energy;
 
+import java.io.Serializable;
+
 import ca.isenor.pokemontcg.player.cards.Card;
 import ca.isenor.pokemontcg.player.cards.CardType;
 import ca.isenor.pokemontcg.player.cards.Type;
 
-public abstract class Energy implements Card {
+public abstract class Energy implements Card,Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 9197228726946238989L;
+
 	private static final CardType cardType = CardType.ENERGY;
 
 	private String name;
@@ -33,5 +40,10 @@ public abstract class Energy implements Card {
 
 	public boolean isBasic() {
 		return basic;
+	}
+
+	@Override
+	public String toString() {
+		return "Energy [name=" + name + "]";
 	}
 }
