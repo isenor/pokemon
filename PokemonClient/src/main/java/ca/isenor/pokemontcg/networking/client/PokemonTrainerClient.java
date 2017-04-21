@@ -4,12 +4,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+import ca.isenor.pokemontcg.networking.client.exceptions.DeckParseException;
 import ca.isenor.pokemontcg.player.Player;
 import ca.isenor.pokemontcg.player.collections.Deck;
 
@@ -31,10 +33,8 @@ public class PokemonTrainerClient {
 			String playerName = stdIn.readLine();
 			System.out.println("Enter a filename for a deck:");
 			Deck playerDeck = new DeckParser().parse(new Scanner(new File(stdIn.readLine())));
-			Player player = new Player(playerName,playerDeck);
-			return player;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			return new Player(playerName,playerDeck);
+		} catch(IOException | DeckParseException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -43,7 +43,7 @@ public class PokemonTrainerClient {
 
 	/**
 	 * Main Client class - this is what the player will run.
-	 * @param args
+	 * @param args <host name> <port number>
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
@@ -70,6 +70,7 @@ public class PokemonTrainerClient {
 						new InputStreamReader(socket.getInputStream()));
 
 				ObjectOutputStream objectOut = new ObjectOutputStream(socket.getOutputStream());
+				ObjectInputStream objectIn = new ObjectInputStream(socket.getInputStream());
 				) {
 
 			System.out.println("Sending player data.");
@@ -84,10 +85,20 @@ public class PokemonTrainerClient {
 			it.start();
 
 			boolean finished = false;
+			// This while loop expects commands and messages from the server.
 			while (!finished && (fromServer = in.readLine()) != null) {
-				if (fromServer.equals("end")) {
+				if ("end".equals(fromServer)) {
 					System.out.println("Ending session...");
+					it.interrupt();
 					finished = true;
+				}
+				else if ("hand".equals(fromServer)) {
+					System.out.println("Cards in hand:");
+					while (in.ready()) {
+						System.out.println(in.readLine());
+					}
+					//Hand hand = (Hand)objectIn.readObject();
+					//System.out.println(hand);
 				}
 				else {
 					System.out.println("Server: " + fromServer);

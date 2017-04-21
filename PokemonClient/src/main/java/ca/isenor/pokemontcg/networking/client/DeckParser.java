@@ -3,6 +3,7 @@ package ca.isenor.pokemontcg.networking.client;
 import java.util.Map;
 import java.util.Scanner;
 
+import ca.isenor.pokemontcg.networking.client.exceptions.DeckParseException;
 import ca.isenor.pokemontcg.player.cards.Card;
 import ca.isenor.pokemontcg.player.cards.CardMapper;
 import ca.isenor.pokemontcg.player.collections.Deck;
@@ -13,7 +14,7 @@ public class DeckParser {
 	public DeckParser() {
 		cardMap = CardMapper.initializeMap();
 	}
-	public Deck parse(Scanner deckScan) throws Exception {
+	public Deck parse(Scanner deckScan) throws DeckParseException  {
 		Deck deck = new Deck();
 		while (deckScan.hasNext()) {
 			int amount = deckScan.nextInt();
@@ -25,7 +26,7 @@ public class DeckParser {
 					deck.putOnBottom(card);
 				}
 				else
-					throw new Exception("No card found with the name: " + cardName + ".");
+					throw new DeckParseException("No card found with the name: " + cardName + ".");
 			}
 		}
 		return deck;

@@ -36,6 +36,12 @@ public class Player implements Serializable {
 		discard = new DiscardPile();
 	}
 
+	/**
+	 * Draw 7 cards from the top of the player's deck to initialize the opening hand.
+	 * @see Deck
+	 * @see Deck#draw()
+	 * @see Player#draw()
+	 */
 	public void openingHand() {
 		draw();
 		draw();
@@ -57,10 +63,18 @@ public class Player implements Serializable {
 	}
 
 
+	/**
+	 * The reference to the player's hand
+	 * @return Hand
+	 */
 	public Hand getHand() {
 		return hand;
 	}
 
+	/**
+	 * The reference to the player's active pokemon
+	 * @return Pokemon
+	 */
 	public Pokemon getActive() {
 		return active;
 	}
@@ -74,13 +88,17 @@ public class Player implements Serializable {
 	}
 
 	/**
-	 * Takes a card from the top of the deck and
+	 * Takes the top Card from the player's deck and
 	 * puts it into the players hand (at the end).
 	 */
 	public void draw() {
 		hand.add(deck.draw());
 	}
 
+	/**
+	 * The reference to the player's deck
+	 * @return Deck
+	 */
 	public Deck getDeck() {
 		return deck;
 	}

@@ -15,7 +15,6 @@ import ca.isenor.pokemontcg.player.collections.Deck;
  * @author dawud
  */
 public class ClientInputThread extends Thread {
-	private BufferedReader stdIn;
 	private PrintWriter out;
 	private ObjectOutputStream objectOut;
 
@@ -27,14 +26,17 @@ public class ClientInputThread extends Thread {
 		this.objectOut = objectOut;
 	}
 
+
 	@Override
 	public void run() {
 		try {
-			stdIn = new BufferedReader(new InputStreamReader(System.in));
-
+			BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
 			String userInput;
 			boolean finished = false;
+			// This while loop accepts commands from the user/player.
+			// It handles the commands as required, almost always forwarding
+			// the command off to the server.
 			while(!finished && (userInput = stdIn.readLine()) != null) {
 				if (userInput.startsWith("chat")) {
 					out.println(userInput);
@@ -48,10 +50,12 @@ public class ClientInputThread extends Thread {
 					Deck deck = new Deck();
 					System.out.println(deck);
 					objectOut.writeObject(deck);
-
+				}
+				else if (userInput.equals("hand")) {
+					out.println(userInput);
 				}
 				else {
-					out.println(userInput);
+					out.println("Unrecognised command: " + userInput);
 				}
 
 			}

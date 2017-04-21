@@ -52,9 +52,6 @@ public class PlayerTurnController {
 		}
 	}
 
-	private void relativePlayers(ServerPlayerThread thisPlayer, ServerPlayerThread otherPlayer) {
-
-	}
 	/**
 	 * Defines the steps in a turn.
 	 *
@@ -95,17 +92,8 @@ public class PlayerTurnController {
 		String command = "";
 		try {
 			thisPlayer.getOut().println("Enter your command:");
-			// block for input
-			//			while((command = thisPlayer.getIn().readLine()) != null) {
-			//				if (command.startsWith("chat")) {
-			//					otherPlayer.getOut().println("Player" + playerNumber + ": " + command.substring(5));
-			//				}
-			//				else {
-			//					otherPlayer.getOut().println("Player" + playerNumber + ": " + command);
-			//					break;
-			//				}
-			//			}
 
+			// Polls for updates to the player command.
 			while (!"done".equals(command) && !"end".equals(command)) {
 				thisPlayer.sleep(10);
 				//System.out.println("waiting for non-onionsauce command");

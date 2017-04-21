@@ -61,22 +61,23 @@ public class ServerPlayerThread extends Thread {
 				ServerInputThread chat = new ServerInputThread(controller,playerNumber);
 				chat.start();
 
+				//Initialize game with shuffled decks, prize cards and opening hands.
+				controller.getPlayer(playerNumber).getDeck().shuffle();
+				controller.getPlayer(playerNumber).openingHand();
+
+
 				boolean finished = false;
 				while(!finished && controller.getPlayerThread((playerNumber + 1) % 2) != null) {
 					inputLine = controller.takeTurn(playerNumber);
 
 					if (inputLine.equals("end")) {
+						chat.interrupt();
 						finished = true;
 					}
 				}
 			}
 			socket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException | InterruptedException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}

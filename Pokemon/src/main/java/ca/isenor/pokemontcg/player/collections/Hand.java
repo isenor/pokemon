@@ -9,6 +9,9 @@ import ca.isenor.pokemontcg.player.cards.CardType;
 import ca.isenor.pokemontcg.player.cards.Stage;
 import ca.isenor.pokemontcg.player.cards.pokemon.Pokemon;
 
+/**
+ * Represents the hand of a player. It's a list of cards, essentially.
+ */
 public class Hand implements Serializable {
 	/**
 	 *
@@ -20,6 +23,10 @@ public class Hand implements Serializable {
 		cards = new LinkedList<>();
 	}
 
+	/**
+	 * Add a card to the player's hand.
+	 * @param card - the card to be added
+	 */
 	public void add(Card card) {
 		cards.add(card);
 	}
@@ -33,6 +40,10 @@ public class Hand implements Serializable {
 	}
 
 	/**
+	 * At the beginning of the game, a player must select a basic pokemon from his/her hand to
+	 * make his/her starting active pokemon. Therefore, a player's opening hand is required to
+	 * have at least one basic pokemon in it. This method checks to see if such a pokemon exists.
+	 *
 	 * @return true if there is a basic pokemon in the hand; false otherwise
 	 */
 	public boolean hasBasic() {
@@ -47,5 +58,14 @@ public class Hand implements Serializable {
 		return basicExists;
 	}
 
-
+	@Override
+	public String toString() {
+		StringBuilder str = new StringBuilder();
+		int i = 1;
+		for (Card card: cards) {
+			str.append(i + ": " + card + "\n");
+			i++;
+		}
+		return str.toString();
+	}
 }

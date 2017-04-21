@@ -47,8 +47,13 @@ public class ServerInputThread extends Thread {
 					Deck deck = (Deck)thisPlayer.getObjectInput().readObject();
 					System.out.println(deck);
 				}
+				else if ("hand".equals(message)) {
+					System.out.println("Received request to send hand to player" + playerNumber);
+					thisPlayer.getOut().println(controller.getPlayer(playerNumber).getHand());
+					System.out.println("Sent hand to player" + playerNumber);
+				}
 				else if (controller.getPlayerTurn() == playerNumber) {
-					System.out.println("playerturn == playerNumber");
+					System.out.println("Command received on player"+playerNumber+"'s turn.");
 					thisPlayer.setCmd(message);
 				}
 			}

@@ -124,6 +124,6 @@ public abstract class Pokemon implements Card, Serializable {
 
 	@Override
 	public String toString() {
-		return "Pokemon [name=" + name + "]";
+		return name + " " + (hitPoints - damage) + "/" + hitPoints;
 	}
 }
