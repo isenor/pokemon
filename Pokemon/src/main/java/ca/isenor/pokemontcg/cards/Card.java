@@ -1,4 +1,4 @@
-package ca.isenor.pokemontcg.player.cards;
+package ca.isenor.pokemontcg.cards;
 
 public interface Card {
 	String getName();

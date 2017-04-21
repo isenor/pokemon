@@ -1,14 +1,14 @@
-package ca.isenor.pokemontcg.player.cards;
+package ca.isenor.pokemontcg.cards;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import ca.isenor.pokemontcg.player.cards.energy.fire.BasicFireEnergy;
-import ca.isenor.pokemontcg.player.cards.energy.water.BasicWaterEnergy;
-import ca.isenor.pokemontcg.player.cards.pokemon.fire.Charmander;
-import ca.isenor.pokemontcg.player.cards.pokemon.fire.Fennekin;
-import ca.isenor.pokemontcg.player.cards.pokemon.water.Froakie;
-import ca.isenor.pokemontcg.player.cards.pokemon.water.Squirtle;
+import ca.isenor.pokemontcg.cards.energy.fire.BasicFireEnergy;
+import ca.isenor.pokemontcg.cards.energy.water.BasicWaterEnergy;
+import ca.isenor.pokemontcg.cards.pokemon.fire.Charmander;
+import ca.isenor.pokemontcg.cards.pokemon.fire.Fennekin;
+import ca.isenor.pokemontcg.cards.pokemon.water.Froakie;
+import ca.isenor.pokemontcg.cards.pokemon.water.Squirtle;
 
 public class CardMapper {
 	public static Map initializeMap() {

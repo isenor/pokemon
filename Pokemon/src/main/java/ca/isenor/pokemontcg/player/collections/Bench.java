@@ -3,7 +3,7 @@ package ca.isenor.pokemontcg.player.collections;
 import java.io.Serializable;
 import java.util.LinkedList;
 
-import ca.isenor.pokemontcg.player.cards.pokemon.Pokemon;
+import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 /**
  * The benched pokemon that a trainer has access to.
  * <p> Initial max size of 5 pokemon.

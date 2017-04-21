@@ -3,7 +3,7 @@ package ca.isenor.pokemontcg.player.collections;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import ca.isenor.pokemontcg.player.cards.Card;
+import ca.isenor.pokemontcg.cards.Card;
 /**
  * The set of prize cards that a player draws from when
  * the opponents pokemon is knocked out.

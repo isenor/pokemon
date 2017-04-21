@@ -1,8 +1,8 @@
-package ca.isenor.pokemontcg.player.cards.pokemon.water;
+package ca.isenor.pokemontcg.cards.pokemon.water;
 
-import ca.isenor.pokemontcg.player.cards.Stage;
-import ca.isenor.pokemontcg.player.cards.Type;
-import ca.isenor.pokemontcg.player.cards.pokemon.Pokemon;
+import ca.isenor.pokemontcg.cards.Stage;
+import ca.isenor.pokemontcg.cards.Type;
+import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 
 /**
  * Aminah's pokemon

@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import ca.isenor.pokemontcg.player.cards.Card;
-import ca.isenor.pokemontcg.player.cards.CardType;
-import ca.isenor.pokemontcg.player.cards.Stage;
-import ca.isenor.pokemontcg.player.cards.pokemon.Pokemon;
+import ca.isenor.pokemontcg.cards.Card;
+import ca.isenor.pokemontcg.cards.CardType;
+import ca.isenor.pokemontcg.cards.Stage;
+import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 
 /**
  * Represents the hand of a player. It's a list of cards, essentially.

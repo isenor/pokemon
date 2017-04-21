@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.powermock.reflect.Whitebox;
 
-import ca.isenor.pokemontcg.player.cards.Card;
+import ca.isenor.pokemontcg.cards.Card;
 
 public class DeckTests {
 

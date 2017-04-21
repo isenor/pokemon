@@ -3,7 +3,7 @@ package ca.isenor.pokemontcg.player.collections;
 import java.io.Serializable;
 import java.util.LinkedList;
 
-import ca.isenor.pokemontcg.player.cards.Card;
+import ca.isenor.pokemontcg.cards.Card;
 
 public class DiscardPile implements Serializable {
 	/**

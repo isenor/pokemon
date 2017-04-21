@@ -1,10 +1,10 @@
-package ca.isenor.pokemontcg.player.cards.energy;
+package ca.isenor.pokemontcg.cards.energy;
 
 import java.io.Serializable;
 
-import ca.isenor.pokemontcg.player.cards.Card;
-import ca.isenor.pokemontcg.player.cards.CardType;
-import ca.isenor.pokemontcg.player.cards.Type;
+import ca.isenor.pokemontcg.cards.Card;
+import ca.isenor.pokemontcg.cards.CardType;
+import ca.isenor.pokemontcg.cards.Type;
 
 public abstract class Energy implements Card,Serializable {
 	/**

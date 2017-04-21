@@ -3,9 +3,9 @@ package ca.isenor.pokemontcg.networking.client;
 import java.util.Map;
 import java.util.Scanner;
 
+import ca.isenor.pokemontcg.cards.Card;
+import ca.isenor.pokemontcg.cards.CardMapper;
 import ca.isenor.pokemontcg.networking.client.exceptions.DeckParseException;
-import ca.isenor.pokemontcg.player.cards.Card;
-import ca.isenor.pokemontcg.player.cards.CardMapper;
 import ca.isenor.pokemontcg.player.collections.Deck;
 
 public class DeckParser {

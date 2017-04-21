@@ -2,7 +2,7 @@ package ca.isenor.pokemontcg.player;
 
 import java.io.Serializable;
 
-import ca.isenor.pokemontcg.player.cards.pokemon.Pokemon;
+import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 import ca.isenor.pokemontcg.player.collections.Bench;
 import ca.isenor.pokemontcg.player.collections.Deck;
 import ca.isenor.pokemontcg.player.collections.DiscardPile;

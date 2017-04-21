@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Random;
 
-import ca.isenor.pokemontcg.player.cards.Card;
+import ca.isenor.pokemontcg.cards.Card;
 /**
  * Holds the list of cards a player draws from.
  *

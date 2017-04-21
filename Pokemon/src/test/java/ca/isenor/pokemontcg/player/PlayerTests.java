@@ -8,8 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.powermock.api.easymock.PowerMock;
 
-import ca.isenor.pokemontcg.player.cards.Card;
-import ca.isenor.pokemontcg.player.cards.pokemon.Pokemon;
+import ca.isenor.pokemontcg.cards.Card;
+import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 import ca.isenor.pokemontcg.player.collections.Deck;
 
 public class PlayerTests {

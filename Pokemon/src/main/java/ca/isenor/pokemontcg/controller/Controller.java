@@ -2,17 +2,17 @@ package ca.isenor.pokemontcg.controller;
 
 import java.util.Scanner;
 
+import ca.isenor.pokemontcg.cards.Card;
+import ca.isenor.pokemontcg.cards.CardType;
+import ca.isenor.pokemontcg.cards.energy.fire.BasicFireEnergy;
+import ca.isenor.pokemontcg.cards.energy.water.BasicWaterEnergy;
+import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
+import ca.isenor.pokemontcg.cards.pokemon.fire.Charmander;
+import ca.isenor.pokemontcg.cards.pokemon.fire.Fennekin;
+import ca.isenor.pokemontcg.cards.pokemon.water.Froakie;
+import ca.isenor.pokemontcg.cards.pokemon.water.Squirtle;
 import ca.isenor.pokemontcg.model.GameModel;
 import ca.isenor.pokemontcg.player.Player;
-import ca.isenor.pokemontcg.player.cards.Card;
-import ca.isenor.pokemontcg.player.cards.CardType;
-import ca.isenor.pokemontcg.player.cards.energy.fire.BasicFireEnergy;
-import ca.isenor.pokemontcg.player.cards.energy.water.BasicWaterEnergy;
-import ca.isenor.pokemontcg.player.cards.pokemon.Pokemon;
-import ca.isenor.pokemontcg.player.cards.pokemon.fire.Charmander;
-import ca.isenor.pokemontcg.player.cards.pokemon.fire.Fennekin;
-import ca.isenor.pokemontcg.player.cards.pokemon.water.Froakie;
-import ca.isenor.pokemontcg.player.cards.pokemon.water.Squirtle;
 import ca.isenor.pokemontcg.player.collections.Deck;
 import ca.isenor.pokemontcg.view.View;
 

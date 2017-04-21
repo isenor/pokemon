@@ -1,4 +1,4 @@
-package ca.isenor.pokemontcg.player.cards;
+package ca.isenor.pokemontcg.cards;
 
 public enum Type {
 	GRASS, FIRE, WATER, LIGHTNING, PSYCHIC, FIGHTING, 

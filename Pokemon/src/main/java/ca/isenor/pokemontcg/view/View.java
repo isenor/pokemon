@@ -1,8 +1,8 @@
 package ca.isenor.pokemontcg.view;
 
+import ca.isenor.pokemontcg.cards.Card;
 import ca.isenor.pokemontcg.model.GameModel;
 import ca.isenor.pokemontcg.player.Player;
-import ca.isenor.pokemontcg.player.cards.Card;
 import ca.isenor.pokemontcg.player.collections.Hand;
 
 /**

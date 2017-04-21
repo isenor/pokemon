@@ -9,11 +9,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.isenor.pokemontcg.player.cards.Card;
-import ca.isenor.pokemontcg.player.cards.Stage;
-import ca.isenor.pokemontcg.player.cards.Type;
-import ca.isenor.pokemontcg.player.cards.energy.fire.BasicFireEnergy;
-import ca.isenor.pokemontcg.player.cards.pokemon.Pokemon;
+import ca.isenor.pokemontcg.cards.Card;
+import ca.isenor.pokemontcg.cards.Stage;
+import ca.isenor.pokemontcg.cards.Type;
+import ca.isenor.pokemontcg.cards.energy.fire.BasicFireEnergy;
+import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 
 public class HandTests {
 

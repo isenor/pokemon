@@ -1,13 +1,13 @@
-package ca.isenor.pokemontcg.player.cards.pokemon;
+package ca.isenor.pokemontcg.cards.pokemon;
 
 import java.io.Serializable;
 import java.util.LinkedList;
 
-import ca.isenor.pokemontcg.player.cards.Card;
-import ca.isenor.pokemontcg.player.cards.CardType;
-import ca.isenor.pokemontcg.player.cards.Stage;
-import ca.isenor.pokemontcg.player.cards.Type;
-import ca.isenor.pokemontcg.player.cards.energy.Energy;
+import ca.isenor.pokemontcg.cards.Card;
+import ca.isenor.pokemontcg.cards.CardType;
+import ca.isenor.pokemontcg.cards.Stage;
+import ca.isenor.pokemontcg.cards.Type;
+import ca.isenor.pokemontcg.cards.energy.Energy;
 
 public abstract class Pokemon implements Card, Serializable {
 	/**
