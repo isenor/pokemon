@@ -92,13 +92,16 @@ public class PokemonTrainerClient {
 					it.interrupt();
 					finished = true;
 				}
+				else if ("mulligan".equals(fromServer)) {
+					while (in.ready()) {
+						System.out.println(in.readLine());
+					}
+				}
 				else if ("hand".equals(fromServer)) {
 					System.out.println("Cards in hand:");
 					while (in.ready()) {
 						System.out.println(in.readLine());
 					}
-					//Hand hand = (Hand)objectIn.readObject();
-					//System.out.println(hand);
 				}
 				else {
 					System.out.println("Server: " + fromServer);

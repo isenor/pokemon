@@ -61,9 +61,22 @@ public class ServerPlayerThread extends Thread {
 				ServerInputThread chat = new ServerInputThread(controller,playerNumber);
 				chat.start();
 
+				Player player = controller.getPlayer(playerNumber);
 				//Initialize game with shuffled decks, prize cards and opening hands.
-				controller.getPlayer(playerNumber).getDeck().shuffle();
-				controller.getPlayer(playerNumber).openingHand();
+				player.getDeck().shuffle();
+				player.openingHand();
+				out.println("handinit");
+				out.println("Opening hand:\n" + player.getHand());
+				while (!player.getHand().hasBasic()) {
+					out.println("Your opening hand contains no Basic Pokemon. Mulligan in progress.");
+					player.putHandIntoDeck();
+					player.getDeck().shuffle();
+					this.sleep(500);
+					player.openingHand();
+					out.println("handinit");
+					out.println("Opening hand:\n" + player.getHand());
+				}
+
 
 
 				boolean finished = false;

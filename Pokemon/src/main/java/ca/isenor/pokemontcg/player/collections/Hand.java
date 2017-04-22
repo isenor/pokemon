@@ -35,6 +35,21 @@ public class Hand implements Serializable {
 		return cards.get(index);
 	}
 
+	/**
+	 * Effectively takes the card from the hand for use elsewhere.
+	 *
+	 * @param index - the index of the card to be removed
+	 * @return Card
+	 */
+	public Card remove(int index) {
+		return cards.remove(index);
+	}
+
+	/**
+	 * Returns the number of cards in the player's hand
+	 *
+	 * @return int
+	 */
 	public int size() {
 		return cards.size();
 	}

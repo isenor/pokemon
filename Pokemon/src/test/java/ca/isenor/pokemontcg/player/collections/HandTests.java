@@ -4,6 +4,7 @@ package ca.isenor.pokemontcg.player.collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -140,5 +141,12 @@ public class HandTests {
 		hand.add(new GenericNonBasic());
 		hand.add(new GenericBasic());
 		assertEquals(3,hand.size());
+	}
+
+	@Test
+	public void removeACard() {
+		Card card = new GenericNonBasic();
+		hand.add(card);
+		assertSame(card,hand.getCard(0));
 	}
 }

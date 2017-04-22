@@ -52,6 +52,15 @@ public class Player implements Serializable {
 		draw();
 	}
 
+	/**
+	 * Put a player's hand back into the deck (on bottom)
+	 */
+	public void putHandIntoDeck() {
+		while (hand.size() > 0) {
+			deck.putOnBottom(hand.remove(hand.size()-1));
+		}
+	}
+
 	public PrizeCards getPrizeCards() {
 		return prizeCards;
 	}
