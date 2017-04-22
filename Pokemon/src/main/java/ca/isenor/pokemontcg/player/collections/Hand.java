@@ -61,10 +61,11 @@ public class Hand implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder str = new StringBuilder();
-		int i = 1;
-		for (Card card: cards) {
-			str.append(i + ": " + card + "\n");
-			i++;
+		for (int i = 1; i <= cards.size(); i++) {
+			str.append(i + ": " + cards.get(i-1));
+			if (i != cards.size()) {
+				str.append("\n");
+			}
 		}
 		return str.toString();
 	}

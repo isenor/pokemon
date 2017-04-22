@@ -96,14 +96,13 @@ public class PlayerTurnController {
 			// Polls for updates to the player command.
 			while (!"done".equals(command) && !"end".equals(command)) {
 				thisPlayer.sleep(10);
-				//System.out.println("waiting for non-onionsauce command");
-				if (!"onionsauce".equals(thisPlayer.getCmd())) {
-					System.out.println("non-onionsauce:Player" + playerNumber + ": " + thisPlayer.getCmd());
+				if (!"<nop>".equals(thisPlayer.getCmd())) {
+					System.out.println("Player" + playerNumber + ": " + thisPlayer.getCmd());
 					otherPlayer.getOut()
 					.println("Player" + playerNumber + ": Action: " + thisPlayer.getCmd());
 
 					command = interpret(thisPlayer.getCmd());
-					thisPlayer.setCmd("onionsauce");
+					thisPlayer.setCmd("<nop>");
 
 				}
 			}
@@ -121,7 +120,7 @@ public class PlayerTurnController {
 
 	private String interpret(String cmd) {
 		String result;
-		if (cmd.startsWith("end")) {
+		if (cmd.startsWith("quit")) {
 			result = cmd;
 		}
 		else if (cmd.equals("done")) {

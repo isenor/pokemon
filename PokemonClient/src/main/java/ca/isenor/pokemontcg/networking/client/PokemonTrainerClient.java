@@ -87,7 +87,7 @@ public class PokemonTrainerClient {
 			boolean finished = false;
 			// This while loop expects commands and messages from the server.
 			while (!finished && (fromServer = in.readLine()) != null) {
-				if ("end".equals(fromServer)) {
+				if ("quit".equals(fromServer)) {
 					System.out.println("Ending session...");
 					it.interrupt();
 					finished = true;

@@ -1,8 +1,6 @@
 package ca.isenor.pokemontcg.networking.server;
 import java.io.IOException;
 
-import ca.isenor.pokemontcg.player.collections.Deck;
-
 /**
  * Serves as a backup for when the ServerPlayerThread is waiting for its turn.
  * @author dawud
@@ -35,31 +33,27 @@ public class ServerInputThread extends Thread {
 		try {
 			boolean finished = false;
 			while (!finished && (message = thisPlayer.getIn().readLine()) != null) {
-				System.out.println("Message received from Player" + playerNumber + ": " + message);
+				System.out.println("Player" + playerNumber + ": \"" + message + "\"");
 				if (message.startsWith("chat")) {
 					otherPlayer.getOut().println(controller.getPlayer(playerNumber).getName() + ": " + message.substring(5));
 				}
-				else if (message.startsWith("end")) {
+				else if (message.startsWith("quit")) {
 					otherPlayer.getOut().println(controller.getPlayer(playerNumber).getName() + " has left the game.");
 					finished = true;
-				}
-				else if (message.startsWith("load")) {
-					Deck deck = (Deck)thisPlayer.getObjectInput().readObject();
-					System.out.println(deck);
+					System.out.println("Ending server input thread for Player" + playerNumber);
 				}
 				else if ("hand".equals(message)) {
-					System.out.println("Received request to send hand to player" + playerNumber);
 					thisPlayer.getOut().println(controller.getPlayer(playerNumber).getHand());
-					System.out.println("Sent hand to player" + playerNumber);
+					System.out.println("Sent hand to Player" + playerNumber);
 				}
 				else if (controller.getPlayerTurn() == playerNumber) {
 					System.out.println("Command received on player"+playerNumber+"'s turn.");
 					thisPlayer.setCmd(message);
 				}
 			}
-		} catch (IOException | ClassNotFoundException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		thisPlayer.getOut().println("end");
+		thisPlayer.getOut().println("quit");
 	}
 }

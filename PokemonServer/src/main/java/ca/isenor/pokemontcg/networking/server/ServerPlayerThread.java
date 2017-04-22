@@ -18,7 +18,7 @@ public class ServerPlayerThread extends Thread {
 	private PlayerTurnController controller;
 	private int playerNumber;
 
-	private String cmd = "onionsauce";
+	private String cmd = "<nop>";
 
 	public ServerPlayerThread(Socket socket, PlayerTurnController controller, int playerNumber) {
 		super("ServerPlayerThread");
@@ -70,7 +70,7 @@ public class ServerPlayerThread extends Thread {
 				while(!finished && controller.getPlayerThread((playerNumber + 1) % 2) != null) {
 					inputLine = controller.takeTurn(playerNumber);
 
-					if (inputLine.equals("end")) {
+					if (inputLine.equals("quit")) {
 						chat.interrupt();
 						finished = true;
 					}
