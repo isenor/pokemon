@@ -47,6 +47,9 @@ public class Hand implements Serializable {
 	 * @return true if there is a basic pokemon in the hand; false otherwise
 	 */
 	public boolean hasBasic() {
+		if (cards.isEmpty()) {
+			return false;
+		}
 		boolean basicExists = false;
 		Iterator<Card> iterator = cards.iterator();
 		do {

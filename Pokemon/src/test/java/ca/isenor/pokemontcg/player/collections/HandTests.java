@@ -38,6 +38,11 @@ public class HandTests {
 	}
 
 	@Test
+	public void testHasBasicOnEmpty() {
+		assertFalse(hand.hasBasic());
+	}
+
+	@Test
 	public void testHasBasicNegative() {
 		hand.add(new BasicFireEnergy());
 		assertFalse(hand.hasBasic());
