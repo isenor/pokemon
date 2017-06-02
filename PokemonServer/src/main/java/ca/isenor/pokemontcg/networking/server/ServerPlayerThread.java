@@ -7,6 +7,10 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import ca.isenor.pokemontcg.cards.Card;
+import ca.isenor.pokemontcg.cards.CardType;
+import ca.isenor.pokemontcg.cards.Stage;
+import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 import ca.isenor.pokemontcg.player.Player;
 
 public class ServerPlayerThread extends Thread {
@@ -50,40 +54,24 @@ public class ServerPlayerThread extends Thread {
 				if (playerNumber == 0) {
 					out.println("Waiting for another player to join...");
 					controller.wait();
-
 					out.println("Another player has joined.");
 				}
 				else {
 					out.println("Letting the other player know you're here");
 					controller.notifyAll();
+					Thread.sleep(50);
 				}
+
+				setupPlayer();
 
 				ServerInputThread chat = new ServerInputThread(controller,playerNumber);
 				chat.start();
-
-				Player player = controller.getPlayer(playerNumber);
-				//Initialize game with shuffled decks, prize cards and opening hands.
-				player.getDeck().shuffle();
-				player.openingHand();
-				out.println("handinit");
-				out.println("Opening hand:\n" + player.getHand());
-				while (!player.getHand().hasBasic()) {
-					out.println("Your opening hand contains no Basic Pokemon. Mulligan in progress.");
-					player.putHandIntoDeck();
-					player.getDeck().shuffle();
-					this.sleep(500);
-					player.openingHand();
-					out.println("handinit");
-					out.println("Opening hand:\n" + player.getHand());
-				}
-
-
 
 				boolean finished = false;
 				while(!finished && controller.getPlayerThread((playerNumber + 1) % 2) != null) {
 					inputLine = controller.takeTurn(playerNumber);
 
-					if (inputLine.equals("quit")) {
+					if ("quit".equals(inputLine)) {
 						chat.interrupt();
 						finished = true;
 					}
@@ -93,6 +81,74 @@ public class ServerPlayerThread extends Thread {
 		} catch (IOException | InterruptedException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private Player setupPlayer() throws InterruptedException, IOException {
+		Player player = controller.getPlayer(playerNumber);
+		player.getDeck().shuffle();
+		setupHand(player);
+		setupActivePokemon(player);
+		return player;
+	}
+
+	private void setupHand(Player player) throws InterruptedException {
+		player.openingHand();
+		out.println("hand");
+		out.println("Opening hand:\n" + player.getHand());
+		out.println("complete");
+		while (!player.getHand().hasBasic()) {
+			out.println("Your opening hand contains no Basic Pokemon. Mulligan in progress.");
+			player.putHandIntoDeck();
+			player.getDeck().shuffle();
+			Thread.sleep(500);
+			player.openingHand();
+			out.println("hand");
+			out.println("Opening hand:\n" + player.getHand());
+			out.println("complete");
+		}
+	}
+
+	private void setupActivePokemon(Player player) throws IOException {
+		String pokeName = "invalid";
+		boolean success = false;
+		while (!success) {
+			out.println("Pick a Basic Pokemon from your hand to be your starting active Pokemon.");
+
+			String inputInt = "";
+			while (!success && (inputInt = in.readLine()) != null) {
+				int selection = Integer.parseInt(inputInt) - 1;
+				if (selection <= player.getHand().size() && selection >= 0) {
+					Card card = player.getHand().getCard(selection);
+					if (isBasicPokemon(card)) {
+						pokeName = ((Pokemon)card).getName();
+						out.println("You have selected " + pokeName + ".\nAre you sure? (y/n)");
+						String conf = in.readLine();
+						if (conf.startsWith("y")) {
+							player.setActive((Pokemon)player.getHand().remove(selection));
+							success = true;
+						}
+					}
+					else {
+						out.println("That is an invalid selection: " + card.getName() + " is not a Basic Pokemon.");
+					}
+				}
+				else {
+					out.println("That is an invalid selection: " + (selection + 1) + " is not within range.");
+				}
+
+				if (!success)
+					out.println("Please select again.");
+			}
+		}
+		out.println("Your active pokemon has been set to " + pokeName + ".");
+	}
+
+	private boolean isBasicPokemon(Card card) {
+		if (card.getCardType() == CardType.POKEMON) {
+			Pokemon pokemon = (Pokemon)card;
+			return pokemon.getStage() == Stage.BASIC;
+		}
+		return false;
 	}
 
 	public String getCmd() {

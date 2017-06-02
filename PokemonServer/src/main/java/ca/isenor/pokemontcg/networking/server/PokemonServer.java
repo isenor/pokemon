@@ -14,7 +14,7 @@ public class PokemonServer {
 			System.err.println("Usage: java PokemonServer <port number>");
 			System.exit(1);
 		}
-
+		System.out.println("Pokemon Server started.\nAwaiting players to join.");
 		int portNumber = Integer.parseInt(args[0]);
 		int playerCount = 0;
 		PlayerTurnController controller;

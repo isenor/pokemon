@@ -3,10 +3,7 @@ package ca.isenor.pokemontcg.networking.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
-
-import ca.isenor.pokemontcg.player.Player;
 
 /**
  * Creates a new thread so that messages can be sent out while waiting for input
@@ -15,14 +12,10 @@ import ca.isenor.pokemontcg.player.Player;
  */
 public class ClientInputThread extends Thread {
 	private PrintWriter out;
-	private ObjectOutputStream objectOut;
 
-	private Player player;
-
-	public ClientInputThread(PrintWriter out, ObjectOutputStream objectOut) {
+	public ClientInputThread(PrintWriter out) {
 		super("Input Thread");
 		this.out = out;
-		this.objectOut = objectOut;
 	}
 
 

@@ -43,12 +43,19 @@ public class ServerInputThread extends Thread {
 					System.out.println("Ending server input thread for Player" + playerNumber);
 				}
 				else if ("hand".equals(message)) {
+					thisPlayer.getOut().println("hand");
 					thisPlayer.getOut().println(controller.getPlayer(playerNumber).getHand());
+					thisPlayer.getOut().println("complete");
 					System.out.println("Sent hand to Player" + playerNumber);
 				}
 				else if (controller.getPlayerTurn() == playerNumber) {
 					System.out.println("Command received on player"+playerNumber+"'s turn.");
 					thisPlayer.setCmd(message);
+				}
+				else {
+					System.out.println("Unable to perform command " + message +
+							" for " + controller.getPlayer(playerNumber).getName());
+					thisPlayer.getOut().println("Unable to perform the command: " + message);
 				}
 			}
 		} catch (IOException e) {

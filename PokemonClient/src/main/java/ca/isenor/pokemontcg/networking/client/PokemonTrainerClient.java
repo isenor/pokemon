@@ -75,15 +75,11 @@ public class PokemonTrainerClient {
 
 			System.out.println("Sending player data.");
 			objectOut.writeObject(player);
-			//System.out.println("Awaiting message from server.");
-			String fromServer;// = in.readLine();
-			//System.out.println("Input received.");
-			// Wait for initial message from server
-			//System.out.println("Server: " + in.readLine());
 
-			ClientInputThread it = new ClientInputThread(out, objectOut);
+			ClientInputThread it = new ClientInputThread(out);
 			it.start();
 
+			String fromServer;
 			boolean finished = false;
 			// This while loop expects commands and messages from the server.
 			while (!finished && (fromServer = in.readLine()) != null) {
@@ -93,14 +89,16 @@ public class PokemonTrainerClient {
 					finished = true;
 				}
 				else if ("mulligan".equals(fromServer)) {
-					while (in.ready()) {
-						System.out.println(in.readLine());
+					String output;
+					while (!"complete".equals(output = in.readLine())) {
+						System.out.println(output);
 					}
 				}
 				else if ("hand".equals(fromServer)) {
 					System.out.println("Cards in hand:");
-					while (in.ready()) {
-						System.out.println(in.readLine());
+					String output;
+					while (!"complete".equals(output = in.readLine())) {
+						System.out.println(output);
 					}
 				}
 				else {
