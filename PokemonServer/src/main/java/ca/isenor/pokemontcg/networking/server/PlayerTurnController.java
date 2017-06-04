@@ -91,7 +91,7 @@ public class PlayerTurnController {
 		thisPlayer.getOut().println("===================");
 		thisPlayer.getOut().println("It is your turn.");
 		thisPlayer.getOut().println("===================");
-		thisPlayer.getOut().print("Enter your command:");
+		thisPlayer.getOut().println("Enter your command:");
 
 		String command = "";
 		// Polls for updates to the player command.
