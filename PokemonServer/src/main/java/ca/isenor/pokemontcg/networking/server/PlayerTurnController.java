@@ -18,7 +18,6 @@ public class PlayerTurnController {
 	private GameModel model;
 	//ServerWatcherThread[] watchers;
 	private PokeLock lock;
-	private boolean wasNotified;
 
 	public PlayerTurnController() {
 		model = new GameModel();
@@ -78,31 +77,23 @@ public class PlayerTurnController {
 		}
 
 		// decide who's turn it is
-		System.out.println("playerNumber:" + playerNumber);
-		System.out.println("playerTurn:" + playerTurn);
-
-
 		synchronized(this) {
 			while (playerTurn != playerNumber) {
-				thisPlayer.getOut().println("Waiting for turn...");
+				thisPlayer.getOut().println("It is " + getPlayer((playerNumber + 1) % 2).getName() + "'s turn.");
 				try {
 					this.wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				//lock.doWait();
 			}
 		}
 
-
-
+		thisPlayer.getOut().println("===================");
 		thisPlayer.getOut().println("It is your turn.");
+		thisPlayer.getOut().println("===================");
+		thisPlayer.getOut().print("Enter your command:");
 
 		String command = "";
-
-		thisPlayer.getOut().println("===================");
-		thisPlayer.getOut().println("Enter your command:");
-
 		// Polls for updates to the player command.
 		while (!"done".equals(command) && !"end".equals(command)) {
 			try {
@@ -111,13 +102,11 @@ public class PlayerTurnController {
 				e.printStackTrace();
 			}
 			if (!NULLCMD.equals(thisPlayer.getCmd())) {
-				System.out.println("Player" + playerNumber + ": " + thisPlayer.getCmd());
-				otherPlayer.getOut()
-				.println(getPlayer(playerNumber).getName() + ": cmd: " + thisPlayer.getCmd());
+				otherPlayer.getOut().println(
+						getPlayer(playerNumber).getName() + ": cmd: " + thisPlayer.getCmd());
 
 				command = interpret(thisPlayer.getCmd());
 				thisPlayer.setCmd(NULLCMD);
-
 			}
 		}
 
@@ -125,7 +114,6 @@ public class PlayerTurnController {
 			playerTurn = (playerTurn + 1) % 2;
 			this.notifyAll();
 		}
-		//lock.doNotify();
 		return command;
 	}
 
@@ -143,8 +131,6 @@ public class PlayerTurnController {
 		else {
 			result = "unknown command: " + cmd;
 		}
-
-		System.out.println("interpreted result: " + result);
 		return result;
 	}
 
