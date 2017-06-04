@@ -112,4 +112,12 @@ public class Player implements Serializable {
 		return deck;
 	}
 
+	/**
+	 * The reference to the player's bench
+	 *
+	 * @return Bench
+	 */
+	public Bench getBench() {
+		return bench;
+	}
 }
