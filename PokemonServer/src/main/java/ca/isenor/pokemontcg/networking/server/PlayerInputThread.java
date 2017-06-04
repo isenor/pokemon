@@ -1,16 +1,21 @@
 package ca.isenor.pokemontcg.networking.server;
 import java.io.IOException;
 
+import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
+
 /**
- * Serves as a backup for when the ServerPlayerThread is waiting for its turn.
+ * Handles commands sent from the client/player concurrently with turn operations.
+ * This allows for commands to be accepted and acted upon even when it is the other player's
+ * turn
+ *
  * @author dawud
  *
  */
-public class ServerInputThread extends Thread {
+public class PlayerInputThread extends Thread {
 	private PlayerTurnController controller;
 	private int playerNumber;
 
-	public ServerInputThread(PlayerTurnController controller, int playerNumber) {
+	public PlayerInputThread(PlayerTurnController controller, int playerNumber) {
 		this.controller = controller;
 		this.playerNumber = playerNumber;
 	}
@@ -40,16 +45,31 @@ public class ServerInputThread extends Thread {
 				else if (message.startsWith("quit")) {
 					otherPlayer.getOut().println(controller.getPlayer(playerNumber).getName() + " has left the game.");
 					finished = true;
-					System.out.println("Ending server input thread for Player" + playerNumber);
+					System.out.println("Ending player input thread for Player" + playerNumber);
 				}
 				else if ("hand".equals(message)) {
 					thisPlayer.getOut().println("hand");
 					thisPlayer.getOut().println(controller.getPlayer(playerNumber).getHand());
 					thisPlayer.getOut().println("complete");
-					System.out.println("Sent hand to Player" + playerNumber);
+					System.out.println("Player" + playerNumber + " looked at his/her hand.");
+				}
+				else if ("active".equals(message)) {
+					thisPlayer.getOut().println("active");
+					Pokemon active = controller.getPlayer(playerNumber).getActive();
+					thisPlayer.getOut().println("Active Pokemon: " + active.longDescription());
+					thisPlayer.getOut().println("complete");
+					System.out.println("Player" + playerNumber + " looked at his/her active Pokemon.");
+				}
+				else if ("myturn".equals(message)) {
+					int otherPlayerNumber = (playerNumber + 1) % 2;
+					String whosTurn = "No. It is " + controller.getPlayer(otherPlayerNumber).getName() + "'s turn.";
+					if (controller.getPlayerTurn() == playerNumber) {
+						whosTurn = "Yes. It is your turn";
+					}
+					thisPlayer.getOut().println(whosTurn);
 				}
 				else if (controller.getPlayerTurn() == playerNumber) {
-					System.out.println("Command received on player"+playerNumber+"'s turn.");
+					System.out.println("Command received on player" + playerNumber + "'s turn.");
 					thisPlayer.setCmd(message);
 				}
 				else {

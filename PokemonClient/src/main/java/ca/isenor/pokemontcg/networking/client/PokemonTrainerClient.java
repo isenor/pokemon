@@ -89,6 +89,7 @@ public class PokemonTrainerClient {
 					finished = true;
 				}
 				else if ("mulligan".equals(fromServer)) {
+					System.out.println("Mulligan in progress:");
 					String output;
 					while (!"complete".equals(output = in.readLine())) {
 						System.out.println(output);
@@ -96,6 +97,18 @@ public class PokemonTrainerClient {
 				}
 				else if ("hand".equals(fromServer)) {
 					System.out.println("Cards in hand:");
+					String output;
+					while (!"complete".equals(output = in.readLine())) {
+						System.out.println(output);
+					}
+				}
+				else if ("handinit".equals(fromServer)) {
+					String output;
+					while (!"complete".equals(output = in.readLine())) {
+						System.out.println(output);
+					}
+				}
+				else if ("active".equals(fromServer)) {
 					String output;
 					while (!"complete".equals(output = in.readLine())) {
 						System.out.println(output);

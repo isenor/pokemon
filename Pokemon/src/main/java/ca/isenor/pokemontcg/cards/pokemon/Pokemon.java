@@ -126,4 +126,8 @@ public abstract class Pokemon implements Card, Serializable {
 	public String toString() {
 		return name + " " + (hitPoints - damage) + "/" + hitPoints;
 	}
+
+	public String longDescription() {
+		return "[" + (hitPoints - damage) + "/" + hitPoints + "] " + name + " " + type;
+	}
 }

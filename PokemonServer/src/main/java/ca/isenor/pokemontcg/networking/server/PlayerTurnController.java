@@ -1,6 +1,7 @@
 package ca.isenor.pokemontcg.networking.server;
 
 import ca.isenor.pokemontcg.model.GameModel;
+import ca.isenor.pokemontcg.networking.server.lock.PokeLock;
 import ca.isenor.pokemontcg.player.Player;
 
 /**
@@ -10,18 +11,18 @@ import ca.isenor.pokemontcg.player.Player;
  *
  */
 public class PlayerTurnController {
+	private static final String NULLCMD = "<nop>";
 	private int playerTurn;
-	ServerPlayerThread player0;
-	ServerPlayerThread player1;
-
-	GameModel model;
+	private ServerPlayerThread player0;
+	private ServerPlayerThread player1;
+	private GameModel model;
 	//ServerWatcherThread[] watchers;
+	private PokeLock lock;
+	private boolean wasNotified;
 
 	public PlayerTurnController() {
-		player0 = null;
-		player1 = null;
-		playerTurn = 0;
 		model = new GameModel();
+		lock = new PokeLock();
 	}
 
 	public void setPlayer(Player player, int playerNumber) {
@@ -30,6 +31,10 @@ public class PlayerTurnController {
 
 	public Player getPlayer(int playerNumber) {
 		return model.getPlayer(playerNumber);
+	}
+
+	public PokeLock getLock() {
+		return lock;
 	}
 
 	/**
@@ -58,7 +63,7 @@ public class PlayerTurnController {
 	 * @param playerNumber
 	 * @return A message for the server
 	 */
-	public synchronized String takeTurn(int playerNumber) {
+	public String takeTurn(final int playerNumber) {
 		ServerPlayerThread thisPlayer;
 		ServerPlayerThread otherPlayer;
 
@@ -73,61 +78,70 @@ public class PlayerTurnController {
 		}
 
 		// decide who's turn it is
-		if (playerTurn != playerNumber) {
-			boolean myTurn = false;
-			while(!myTurn) {
+		System.out.println("playerNumber:" + playerNumber);
+		System.out.println("playerTurn:" + playerTurn);
+
+
+		synchronized(this) {
+			while (playerTurn != playerNumber) {
+				thisPlayer.getOut().println("Waiting for turn...");
 				try {
-					thisPlayer.getOut().println("Waiting for turn...");
 					this.wait();
-					myTurn = true;
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				//lock.doWait();
 			}
 		}
-		else {
-			thisPlayer.getOut().println("It is your turn.");
-		}
+
+
+
+		thisPlayer.getOut().println("It is your turn.");
 
 		String command = "";
-		try {
-			thisPlayer.getOut().println("Enter your command:");
 
-			// Polls for updates to the player command.
-			while (!"done".equals(command) && !"end".equals(command)) {
-				thisPlayer.sleep(10);
-				if (!"<nop>".equals(thisPlayer.getCmd())) {
-					System.out.println("Player" + playerNumber + ": " + thisPlayer.getCmd());
-					otherPlayer.getOut()
-					.println("Player" + playerNumber + ": Action: " + thisPlayer.getCmd());
+		thisPlayer.getOut().println("===================");
+		thisPlayer.getOut().println("Enter your command:");
 
-					command = interpret(thisPlayer.getCmd());
-					thisPlayer.setCmd("<nop>");
+		// Polls for updates to the player command.
+		while (!"done".equals(command) && !"end".equals(command)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			if (!NULLCMD.equals(thisPlayer.getCmd())) {
+				System.out.println("Player" + playerNumber + ": " + thisPlayer.getCmd());
+				otherPlayer.getOut()
+				.println(getPlayer(playerNumber).getName() + ": cmd: " + thisPlayer.getCmd());
 
-				}
+				command = interpret(thisPlayer.getCmd());
+				thisPlayer.setCmd(NULLCMD);
+
 			}
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
 
-		//otherPlayer.getOut().println("Player" + playerNumber + ": " + "turn done.");
-		System.err.println("Player" + playerNumber + ": " + command);
-		playerTurn = (playerTurn + 1) % 2;
-		this.notifyAll();
+		synchronized(this) {
+			playerTurn = (playerTurn + 1) % 2;
+			this.notifyAll();
+		}
+		//lock.doNotify();
 		return command;
 	}
 
+	/**
+	 * Interpret the result of a command
+	 *
+	 * @param cmd
+	 * @return
+	 */
 	private String interpret(String cmd) {
 		String result;
-		if (cmd.startsWith("quit")) {
-			result = cmd;
-		}
-		else if (cmd.equals("done")) {
+		if (cmd.equals("done")) {
 			result = cmd;
 		}
 		else {
-			result = cmd + " acknowledged";
+			result = "unknown command: " + cmd;
 		}
 
 		System.out.println("interpreted result: " + result);

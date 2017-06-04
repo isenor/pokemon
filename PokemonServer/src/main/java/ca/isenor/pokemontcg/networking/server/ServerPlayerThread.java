@@ -13,6 +13,13 @@ import ca.isenor.pokemontcg.cards.Stage;
 import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 import ca.isenor.pokemontcg.player.Player;
 
+/**
+ * A thread running on the server side for each player connected.
+ * Handles initial setup of player objects for the Game Model.
+ *
+ * @author dawud
+ *
+ */
 public class ServerPlayerThread extends Thread {
 	private Socket socket;
 	private PrintWriter out;
@@ -20,12 +27,12 @@ public class ServerPlayerThread extends Thread {
 	private ObjectInputStream objectInput;
 	private ObjectOutputStream objectOutput;
 	private PlayerTurnController controller;
-	private int playerNumber;
+	private final int playerNumber;
 
 	private String cmd = "<nop>";
 
 	public ServerPlayerThread(Socket socket, PlayerTurnController controller, int playerNumber) {
-		super("ServerPlayerThread");
+		super("ServerPlayerThread" + playerNumber);
 		this.socket = socket;
 		this.controller = controller;
 		this.playerNumber = playerNumber;
@@ -42,67 +49,102 @@ public class ServerPlayerThread extends Thread {
 			objectInput = new ObjectInputStream(socket.getInputStream());
 			objectOutput = new ObjectOutputStream(socket.getOutputStream());
 			String inputLine;
-			//out.print("Contact with server established. You are player number " +	(playerNumber + 1) + ". Awaiting player data.");
-			//System.out.print("Contact with server established. You are player number " + (playerNumber + 1) + ". Awaiting player data.");
 
-			controller.setPlayer((Player) objectInput.readObject(), playerNumber);
+			controller.setPlayer(readPlayerData(),playerNumber);
 
 			out.println("Welcome Pokemon Trainer " + controller.getPlayer(playerNumber).getName() + "!");
 			out.println(controller.getPlayer(playerNumber).getDeck());
 
-			synchronized (controller) {
-				if (playerNumber == 0) {
-					out.println("Waiting for another player to join...");
-					controller.wait();
-					out.println("Another player has joined.");
-				}
-				else {
-					out.println("Letting the other player know you're here");
-					controller.notifyAll();
-					Thread.sleep(50);
-				}
+			if (playerNumber == controller.getPlayerTurn()) {
+				out.println("Waiting for another player to join...");
+				controller.getLock().doWait();
+				out.println("Another player has joined.");
+			}
+			else {
+				out.println("Letting the other player know you're here");
+				controller.getLock().doNotify();
+			}
 
-				setupPlayer();
+			setupPlayer();
 
-				ServerInputThread chat = new ServerInputThread(controller,playerNumber);
-				chat.start();
+			if (controller.getLock().checkAndIncrement()) {
+				out.println("Waiting for other player to choose Active Pokemon");
+				controller.getLock().doWait();
+				out.println("The other player is done");
+			}
+			else {
+				out.println("Letting other player know you're done choosing your Active Pokemon");
+				controller.getLock().doNotify();
+			}
 
-				boolean finished = false;
-				while(!finished && controller.getPlayerThread((playerNumber + 1) % 2) != null) {
-					inputLine = controller.takeTurn(playerNumber);
+			PlayerInputThread chat = new PlayerInputThread(controller,playerNumber);
+			chat.start();
 
-					if ("quit".equals(inputLine)) {
-						chat.interrupt();
-						finished = true;
-					}
+			out.println("========================");
+			out.println("     Starting game!");
+			out.println("Opponent:");
+			out.println(controller.getPlayer((playerNumber + 1) % 2).getName());
+			out.println("========================");
+			boolean finished = false;
+			while(!finished && controller.getPlayerThread((playerNumber + 1) % 2) != null) {
+				inputLine = controller.takeTurn(playerNumber);
+
+				if ("quit".equals(inputLine)) {
+					finished = true;
 				}
 			}
+			System.out.println("THIS IS THE END!");
 			socket.close();
-		} catch (IOException | InterruptedException | ClassNotFoundException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private Player setupPlayer() throws InterruptedException, IOException {
+	private Player readPlayerData() {
+		try {
+			try {
+				return (Player) objectInput.readObject();
+			} catch (ClassNotFoundException e) {
+				System.out.println("Failed to receive player data. Aborting...");
+				out.println("Failed to receive player data. Aborting...");
+				e.printStackTrace();
+				socket.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private Player setupPlayer()  {
 		Player player = controller.getPlayer(playerNumber);
 		player.getDeck().shuffle();
 		setupHand(player);
-		setupActivePokemon(player);
+		while (player.getActive() == null) {
+			try {
+				setupActivePokemon(player);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		return player;
 	}
 
-	private void setupHand(Player player) throws InterruptedException {
+	private void setupHand(Player player)  {
 		player.openingHand();
-		out.println("hand");
+		out.println("handinit");
 		out.println("Opening hand:\n" + player.getHand());
 		out.println("complete");
 		while (!player.getHand().hasBasic()) {
-			out.println("Your opening hand contains no Basic Pokemon. Mulligan in progress.");
 			player.putHandIntoDeck();
 			player.getDeck().shuffle();
-			Thread.sleep(500);
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			player.openingHand();
-			out.println("hand");
+			out.println("mulligan");
 			out.println("Opening hand:\n" + player.getHand());
 			out.println("complete");
 		}
@@ -113,10 +155,10 @@ public class ServerPlayerThread extends Thread {
 		boolean success = false;
 		while (!success) {
 			out.println("Pick a Basic Pokemon from your hand to be your starting active Pokemon.");
-
-			String inputInt = "";
+			final int arrayOffset = 1;
+			String inputInt;
 			while (!success && (inputInt = in.readLine()) != null) {
-				int selection = Integer.parseInt(inputInt) - 1;
+				int selection = Integer.parseInt(inputInt) - arrayOffset;
 				if (selection <= player.getHand().size() && selection >= 0) {
 					Card card = player.getHand().getCard(selection);
 					if (isBasicPokemon(card)) {
@@ -133,7 +175,7 @@ public class ServerPlayerThread extends Thread {
 					}
 				}
 				else {
-					out.println("That is an invalid selection: " + (selection + 1) + " is not within range.");
+					out.println("That is an invalid selection: " + (selection + arrayOffset) + " is not within range.");
 				}
 
 				if (!success)
