@@ -88,6 +88,24 @@ public class PokemonTrainerClient {
 					it.interrupt();
 					finished = true;
 				}
+				else if ("clearscreen".equals(fromServer)) {
+					final String ANSI_CLS = "\u001b[2J";
+					final String ANSI_HOME = "\u001b[H";
+					System.out.print(ANSI_CLS + ANSI_HOME);
+					System.out.flush();
+				}
+				else if ("server".equals(fromServer)) {
+					System.out.println("Server: " + fromServer);
+				}
+				else if ("multiline".equals(fromServer)) {
+					String output;
+					while (!"complete".equals(output = in.readLine())) {
+						System.out.println(output);
+					}
+				}
+				else if ("blankline".equals(fromServer)) {
+					System.out.println();
+				}
 				else if ("mulligan".equals(fromServer)) {
 					System.out.println("Mulligan in progress:");
 					String output;
@@ -95,27 +113,8 @@ public class PokemonTrainerClient {
 						System.out.println(output);
 					}
 				}
-				else if ("hand".equals(fromServer)) {
-					System.out.println("Cards in hand:");
-					String output;
-					while (!"complete".equals(output = in.readLine())) {
-						System.out.println(output);
-					}
-				}
-				else if ("handinit".equals(fromServer)) {
-					String output;
-					while (!"complete".equals(output = in.readLine())) {
-						System.out.println(output);
-					}
-				}
-				else if ("active".equals(fromServer)) {
-					String output;
-					while (!"complete".equals(output = in.readLine())) {
-						System.out.println(output);
-					}
-				}
 				else {
-					System.out.println("Server: " + fromServer);
+					System.out.println(fromServer);
 				}
 			}
 		} catch (UnknownHostException e) {

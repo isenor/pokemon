@@ -47,16 +47,25 @@ public class PlayerInputThread extends Thread {
 					finished = true;
 					System.out.println("Ending player input thread for Player" + playerNumber);
 				}
+				else if ("clear".equals(message)) {
+					thisPlayer.getOut().println("clearscreen");
+				}
+				else if ("bench".equals(message)) {
+					thisPlayer.getOut().println("multiline");
+					thisPlayer.getOut().println(controller.getPlayer(playerNumber).getBench());
+					thisPlayer.getOut().println("complete");
+					System.out.println("Player" + playerNumber + " looked at his/her bench.");
+				}
 				else if ("hand".equals(message)) {
-					thisPlayer.getOut().println("hand");
+					thisPlayer.getOut().println("multiline");
 					thisPlayer.getOut().println(controller.getPlayer(playerNumber).getHand());
 					thisPlayer.getOut().println("complete");
 					System.out.println("Player" + playerNumber + " looked at his/her hand.");
 				}
 				else if ("active".equals(message)) {
-					thisPlayer.getOut().println("active");
+					thisPlayer.getOut().println("multiline");
 					Pokemon active = controller.getPlayer(playerNumber).getActive();
-					thisPlayer.getOut().println("Active Pokemon: " + active.longDescription());
+					thisPlayer.getOut().println("Active Pokemon:\n" + active.longDescription());
 					thisPlayer.getOut().println("complete");
 					System.out.println("Player" + playerNumber + " looked at his/her active Pokemon.");
 				}

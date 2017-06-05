@@ -12,6 +12,7 @@ import ca.isenor.pokemontcg.cards.CardType;
 import ca.isenor.pokemontcg.cards.Stage;
 import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 import ca.isenor.pokemontcg.player.Player;
+import ca.isenor.pokemontcg.player.collections.Bench;
 
 /**
  * A thread running on the server side for each player connected.
@@ -77,6 +78,18 @@ public class ServerPlayerThread extends Thread {
 				controller.getLock().doNotify();
 			}
 
+			setupBench();
+
+			if (controller.getLock().checkAndIncrement()) {
+				out.println("Waiting for other player to choose benched Pokemon");
+				controller.getLock().doWait();
+				out.println("The other player is done");
+			}
+			else {
+				out.println("Letting other player know you're done choosing your benched Pokemon");
+				controller.getLock().doNotify();
+			}
+
 			PlayerInputThread chat = new PlayerInputThread(controller,playerNumber);
 			chat.start();
 
@@ -122,7 +135,7 @@ public class ServerPlayerThread extends Thread {
 		setupHand(player);
 		while (player.getActive() == null) {
 			try {
-				setupActivePokemon(player);
+				chooseActivePokemon(player);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -132,9 +145,7 @@ public class ServerPlayerThread extends Thread {
 
 	private void setupHand(Player player)  {
 		player.openingHand();
-		out.println("handinit");
-		out.println("Opening hand:\n" + player.getHand());
-		out.println("complete");
+		displayHand(player);
 		while (!player.getHand().hasBasic()) {
 			player.putHandIntoDeck();
 			player.getDeck().shuffle();
@@ -150,11 +161,11 @@ public class ServerPlayerThread extends Thread {
 		}
 	}
 
-	private void setupActivePokemon(Player player) throws IOException {
+	private void chooseActivePokemon(Player player) throws IOException {
 		String pokeName = "invalid";
 		boolean success = false;
 		while (!success) {
-			out.println("Pick a Basic Pokemon from your hand to be your starting active Pokemon.");
+			out.println("Pick a Basic Pokemon from your hand to be your active Pokemon.");
 			final int arrayOffset = 1;
 			String inputInt;
 			while (!success && (inputInt = in.readLine()) != null) {
@@ -183,6 +194,96 @@ public class ServerPlayerThread extends Thread {
 			}
 		}
 		out.println("Your active pokemon has been set to " + pokeName + ".");
+	}
+
+	private void displayHand(Player player) {
+		multilineMessage("Your hand:\n" + player.getHand().toString());
+	}
+
+	private void displayBench(Player player) {
+		multilineMessage("Your bench:\n" + player.getBench().toString());
+	}
+
+	private void multilineMessage(String message) {
+		out.println("multiline");
+		out.println(message);
+		out.println("complete");
+	}
+
+	private void setupBench() throws IOException {
+		Player player = controller.getPlayer(playerNumber);
+		boolean success = false;
+		while (!success) {
+			out.println("clearscreen");
+			displayHand(player);
+			out.println("blankline");
+			displayBench(player);
+			out.println("Available commands: active restart done <integers>");
+			out.println("Pick basic Pokemon from your hand to be on your bench");
+			final int arrayOffset = 1;
+			String input;
+			Bench bench = new Bench();
+			while (!success && (input = in.readLine()) != null) {
+				int selection;
+				if ("active".equals(input)) {
+					multilineMessage("Your active Pokemon:\n" + player.getActive().longDescription());
+					in.readLine();
+				}
+				else if ("restart".equals(input) || "reset".equals(input)) {
+					out.println("Are you sure you want to choose a new bench? (y/n)");
+					String conf = in.readLine();
+					if (conf.startsWith("y")) {
+						while (bench.size() > 0) {
+							player.getHand().add(bench.remove(0));
+						}
+					}
+				}
+				else if ("done".equals(input)) {
+					multilineMessage("Your bench:\n" + bench);
+					out.println("Are you sure you're done? (y/n)");
+					String conf = in.readLine();
+					if (conf.startsWith("y")) {
+						player.setBench(bench);
+						success = true;
+					}
+				}
+				else {
+					try {
+						selection = Integer.parseInt(input) - arrayOffset;
+						if (selection <= player.getHand().size() && selection >= 0) {
+							Card card = player.getHand().getCard(selection);
+							String pokeName;
+							if (isBasicPokemon(card)) {
+								pokeName = ((Pokemon)card).getName();
+								out.println("You have selected " + pokeName + ".\nAre you sure? (y/n)");
+								String conf = in.readLine();
+								if (conf.startsWith("y")) {
+									bench.add((Pokemon)player.getHand().remove(selection));
+								}
+							}
+							else {
+								out.println("That is an invalid selection: " + card.getName() + " is not a Basic Pokemon.");
+							}
+						}
+						else {
+							out.println("That is an invalid selection: " + (selection + arrayOffset) + " is not within range.");
+						}
+					}
+					catch (NumberFormatException e) {
+						out.println("Unrecognised command - press Enter to continue");
+						in.readLine();
+					}
+				}
+				if (!success) {
+					out.println("clearscreen");
+					displayHand(player);
+					out.println("blankline");
+					multilineMessage("Your bench:\n" + bench.toString());
+					out.println("Available commands: active restart done <integers>");
+					out.println("Pick basic Pokemon from your hand to be on your bench");
+				}
+			}
+		}
 	}
 
 	private boolean isBasicPokemon(Card card) {
