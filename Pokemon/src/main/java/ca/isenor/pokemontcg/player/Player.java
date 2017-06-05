@@ -120,4 +120,13 @@ public class Player implements Serializable {
 	public Bench getBench() {
 		return bench;
 	}
+
+	/**
+	 * Set the bench reference for a player
+	 *
+	 * @param bench
+	 */
+	public void setBench(Bench bench) {
+		this.bench = bench;
+	}
 }
