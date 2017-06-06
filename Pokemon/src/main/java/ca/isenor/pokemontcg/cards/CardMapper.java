@@ -11,7 +11,10 @@ import ca.isenor.pokemontcg.cards.pokemon.water.Froakie;
 import ca.isenor.pokemontcg.cards.pokemon.water.Squirtle;
 
 public class CardMapper {
-	public static Map initializeMap() {
+
+	private CardMapper() {}
+
+	public static Map<String,Card> initializeMap() {
 		Map<String,Card> cardMap = new HashMap<>();
 		cardMap.put("Basic Water Energy",new BasicWaterEnergy());
 		cardMap.put("Basic Fire Energy",new BasicFireEnergy());
