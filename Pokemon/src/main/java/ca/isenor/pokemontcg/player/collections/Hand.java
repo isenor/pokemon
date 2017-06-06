@@ -55,6 +55,15 @@ public class Hand implements Serializable {
 	}
 
 	/**
+	 * Check if the player's hand is empty
+	 *
+	 * @return true if there are no cards in the player's hand; false otherwise
+	 */
+	public boolean isEmpty() {
+		return cards.isEmpty();
+	}
+
+	/**
 	 * At the beginning of the game, a player must select a basic pokemon from his/her hand to
 	 * make his/her starting active pokemon. Therefore, a player's opening hand is required to
 	 * have at least one basic pokemon in it. This method checks to see if such a pokemon exists.
