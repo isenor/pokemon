@@ -2,6 +2,7 @@ package ca.isenor.pokemontcg.player;
 
 import java.io.Serializable;
 
+import ca.isenor.pokemontcg.cards.Card;
 import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 import ca.isenor.pokemontcg.player.collections.Bench;
 import ca.isenor.pokemontcg.player.collections.Deck;
@@ -99,9 +100,13 @@ public class Player implements Serializable {
 	/**
 	 * Takes the top Card from the player's deck and
 	 * puts it into the players hand (at the end).
+	 *
+	 * @return the card that was drawn
 	 */
-	public void draw() {
-		hand.add(deck.draw());
+	public Card draw() {
+		Card card = deck.draw();
+		hand.add(card);
+		return card;
 	}
 
 	/**

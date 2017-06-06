@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.powermock.api.easymock.PowerMock;
 
 import ca.isenor.pokemontcg.cards.Card;
+import ca.isenor.pokemontcg.cards.Stage;
+import ca.isenor.pokemontcg.cards.Type;
 import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 import ca.isenor.pokemontcg.player.collections.Deck;
 
@@ -64,6 +66,29 @@ public class PlayerTests {
 	@Test
 	public void testGetName() {
 		assertEquals("Player",player.getName());
+	}
+
+	/**
+	 * Fake Pokemon for testing purposes
+	 *
+	 * @author dawud
+	 */
+	private class Fakeon extends Pokemon {
+		public Fakeon() {
+			super("Fakeon", 120, 3, Type.FIGHTING, Type.FAIRY, Type.NONE,
+					Stage.STAGE1);
+		}
+	}
+
+	@Test
+	public void testDrawReturnValue() {
+		Pokemon fakeon = new Fakeon();
+		EasyMock.expect(mockDeck.draw()).andReturn(fakeon);
+
+		EasyMock.replay(mockDeck);
+		Card card = player.draw();
+		assertEquals(card,fakeon);
+		EasyMock.verify(mockDeck);
 	}
 
 }
