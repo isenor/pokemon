@@ -52,6 +52,10 @@ public class Bench implements Serializable {
 		return bench.size();
 	}
 
+	public int maxSize() {
+		return maxSize;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder str = new StringBuilder();
