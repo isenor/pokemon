@@ -219,11 +219,12 @@ public class ServerPlayerThread extends Thread {
 			displayHand(player);
 			out.println("blankline");
 			displayBench(player);
-			out.println("Available commands: active restart done <integers>");
-			out.println("Pick basic Pokemon from your hand to be on your bench");
 			final int arrayOffset = 1;
-			String input;
 			Bench bench = new Bench();
+			String numbers = player.getHand().isEmpty() ? "" : "1-" + (player.getHand().size() + arrayOffset);
+			out.println("Available commands: active restart done " + numbers);
+			out.println("Pick basic Pokemon from your hand to be on your bench");
+			String input;
 			while (!success && (input = in.readLine()) != null) {
 				int selection;
 				if ("active".equals(input)) {
@@ -231,7 +232,7 @@ public class ServerPlayerThread extends Thread {
 					in.readLine();
 				}
 				else if ("restart".equals(input) || "reset".equals(input)) {
-					out.println("Are you sure you want to choose a new bench? (y/n)");
+					out.println("Are you sure you want to start over? (y/n)");
 					String conf = in.readLine();
 					if (conf.startsWith("y")) {
 						while (bench.size() > 0) {
@@ -251,7 +252,11 @@ public class ServerPlayerThread extends Thread {
 				else {
 					try {
 						selection = Integer.parseInt(input) - arrayOffset;
-						if (selection <= player.getHand().size() && selection >= 0) {
+						if (bench.size() == bench.maxSize()) {
+							out.println("You can't add anymore Pokemon to your bench.");
+							in.readLine();
+						}
+						else if (selection < player.getHand().size() && selection >= 0) {
 							Card card = player.getHand().getCard(selection);
 							String pokeName;
 							if (isBasicPokemon(card)) {
@@ -260,18 +265,24 @@ public class ServerPlayerThread extends Thread {
 								String conf = in.readLine();
 								if (conf.startsWith("y")) {
 									bench.add((Pokemon)player.getHand().remove(selection));
+
 								}
 							}
 							else {
 								out.println("That is an invalid selection: " + card.getName() + " is not a Basic Pokemon.");
+								out.println("<press enter>");
+								in.readLine();
 							}
 						}
 						else {
 							out.println("That is an invalid selection: " + (selection + arrayOffset) + " is not within range.");
+							out.println("<press enter>");
+							in.readLine();
 						}
 					}
 					catch (NumberFormatException e) {
-						out.println("Unrecognised command - press Enter to continue");
+						out.println("Unrecognised command");
+						out.println("<press enter>");
 						in.readLine();
 					}
 				}
@@ -280,8 +291,15 @@ public class ServerPlayerThread extends Thread {
 					displayHand(player);
 					out.println("blankline");
 					multilineMessage("Your bench:\n" + bench.toString());
-					out.println("Available commands: active restart done <integers>");
-					out.println("Pick basic Pokemon from your hand to be on your bench");
+					if (bench.size() == bench.maxSize()) {
+						out.println("Available commands: active restart done");
+						out.println("You have a full bench. Type <done> to finalize selection");
+					}
+					else {
+						numbers = player.getHand().isEmpty() ? "" : "1-" + (player.getHand().size() + arrayOffset);
+						out.println("Available commands: active restart done " + numbers);
+						out.println("Pick basic Pokemon from your hand to be on your bench");
+					}
 				}
 			}
 		}
