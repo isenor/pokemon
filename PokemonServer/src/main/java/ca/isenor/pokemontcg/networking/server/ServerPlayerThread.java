@@ -93,6 +93,7 @@ public class ServerPlayerThread extends Thread {
 			PlayerInputThread chat = new PlayerInputThread(controller,playerNumber);
 			chat.start();
 
+			out.println("clearscreen");
 			out.println("========================");
 			out.println("     Starting game!");
 			out.println("Opponent:");

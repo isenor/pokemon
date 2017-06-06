@@ -1,5 +1,7 @@
 package ca.isenor.pokemontcg.networking.server;
 
+import java.io.PrintWriter;
+
 import ca.isenor.pokemontcg.model.GameModel;
 import ca.isenor.pokemontcg.networking.server.lock.PokeLock;
 import ca.isenor.pokemontcg.player.Player;
@@ -90,6 +92,9 @@ public class PlayerTurnController {
 
 		thisPlayer.getOut().println("===================");
 		thisPlayer.getOut().println("It is your turn.");
+
+		drawPhase(playerNumber, thisPlayer.getOut());
+
 		thisPlayer.getOut().println("===================");
 		thisPlayer.getOut().println("Enter your command:");
 
@@ -115,6 +120,19 @@ public class PlayerTurnController {
 			this.notifyAll();
 		}
 		return command;
+	}
+
+	private void drawPhase(int playerNumber, PrintWriter out) {
+		Player player = model.getPlayer(playerNumber);
+		if (player.getDeck().isEmpty()) {
+			out.println("You have no more cards in your deck. You lose!");
+		}
+		else {
+			out.println("You drew: " + player.draw());
+			out.println("blankline");
+			out.println("Your hand:");
+			out.println(player.getHand().toString());
+		}
 	}
 
 	/**
