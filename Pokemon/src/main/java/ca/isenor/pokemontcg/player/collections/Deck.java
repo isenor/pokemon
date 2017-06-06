@@ -66,6 +66,10 @@ public class Deck implements Serializable {
 		return cards.size();
 	}
 
+	public boolean isEmpty() {
+		return cards.isEmpty();
+	}
+
 	@Override
 	public String toString() {
 		return "Deck [cards=" + cards + "]";
