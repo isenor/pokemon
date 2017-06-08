@@ -12,6 +12,7 @@ import ca.isenor.pokemontcg.cards.Card;
 import ca.isenor.pokemontcg.cards.Stage;
 import ca.isenor.pokemontcg.cards.Type;
 import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
+import ca.isenor.pokemontcg.cards.pokemon.fire.Charmander;
 import ca.isenor.pokemontcg.player.collections.Deck;
 
 public class PlayerTests {
@@ -43,8 +44,7 @@ public class PlayerTests {
 	@Test
 	public void testOpeningHand() {
 		Player partMockPlayer = PowerMock.createPartialMock(Player.class, "draw");
-		partMockPlayer.draw();
-		PowerMock.expectLastCall().times(7);
+		EasyMock.expect(partMockPlayer.draw()).andReturn(new Charmander()).times(7);
 
 		PowerMock.replay(partMockPlayer);
 		partMockPlayer.openingHand();
