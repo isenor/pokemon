@@ -94,10 +94,13 @@ public class ServerPlayerThread extends Thread {
 			chat.start();
 
 			out.println("clearscreen");
+
+			controller.getPlayer(playerNumber).setPrizeCards();
+			out.println("Put the top " +
+					controller.getPlayer(playerNumber).getPrizeCards().getMaxPrizes() + " cards aside as prize cards.");
 			out.println("========================");
 			out.println("     Starting game!");
-			out.println("Opponent:");
-			out.println(controller.getPlayer((playerNumber + 1) % 2).getName());
+			out.println("Opponent: " + controller.getPlayer((playerNumber + 1) % 2).getName());
 			out.println("========================");
 			boolean finished = false;
 			while(!finished && controller.getPlayerThread((playerNumber + 1) % 2) != null) {
@@ -221,7 +224,7 @@ public class ServerPlayerThread extends Thread {
 			displayBench(player);
 			final int arrayOffset = 1;
 			Bench bench = new Bench();
-			String numbers = player.getHand().isEmpty() ? "" : "1-" + (player.getHand().size() + arrayOffset);
+			String numbers = player.getHand().isEmpty() ? "" : "1-" + (player.getHand().size());
 			out.println("Available commands: active restart done " + numbers);
 			out.println("Pick basic Pokemon from your hand to be on your bench");
 			String input;
@@ -296,7 +299,7 @@ public class ServerPlayerThread extends Thread {
 						out.println("You have a full bench. Type <done> to finalize selection");
 					}
 					else {
-						numbers = player.getHand().isEmpty() ? "" : "1-" + (player.getHand().size() + arrayOffset);
+						numbers = player.getHand().isEmpty() ? "" : "1-" + (player.getHand().size());
 						out.println("Available commands: active restart done " + numbers);
 						out.println("Pick basic Pokemon from your hand to be on your bench");
 					}
