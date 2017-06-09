@@ -34,6 +34,10 @@ public class PlayerTurnController {
 		return model.getPlayer(playerNumber);
 	}
 
+	public Player getOpponentOf(int playerNumber) {
+		return model.getPlayer((playerNumber + 1) % 2);
+	}
+
 	public PokeLock getLock() {
 		return lock;
 	}
