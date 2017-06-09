@@ -48,4 +48,8 @@ public class PrizeCards implements Serializable {
 	public Card pick(int index) {
 		return prizes.remove(index);
 	}
+
+	public int size() {
+		return prizes.size();
+	}
 }
