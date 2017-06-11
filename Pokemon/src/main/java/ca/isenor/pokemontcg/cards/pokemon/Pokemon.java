@@ -26,6 +26,7 @@ public abstract class Pokemon implements Card, Serializable {
 	private Type resistance;
 	private Stage stage;
 	private LinkedList<Energy> attachedEnergy;
+	private boolean knockedOut;
 
 	public Pokemon(String name,
 			int hitPoints,
@@ -43,6 +44,7 @@ public abstract class Pokemon implements Card, Serializable {
 		this.resistance = resistance;
 		this.stage = stage;
 		attachedEnergy = new LinkedList<>();
+		knockedOut = false;
 	}
 
 	public int getHitPoints() {
@@ -120,6 +122,14 @@ public abstract class Pokemon implements Card, Serializable {
 
 	public void attachEnergy(Energy energy) {
 		attachedEnergy.add(energy);
+	}
+
+	public boolean isKnockedOut() {
+		return knockedOut;
+	}
+
+	public void setKnockedOut(boolean knockedOut) {
+		this.knockedOut = knockedOut;
 	}
 
 	@Override
