@@ -28,6 +28,8 @@ public class Player implements Serializable {
 	private Bench bench;
 	private DiscardPile discard;
 
+	private boolean playedEnergy;
+
 	public Player(String name, Deck deck) {
 		this.name = name;
 		this.deck = deck;
@@ -72,7 +74,6 @@ public class Player implements Serializable {
 		}
 	}
 
-
 	/**
 	 * The reference to the player's hand
 	 * @return Hand
@@ -108,6 +109,25 @@ public class Player implements Serializable {
 		hand.add(card);
 		return card;
 	}
+
+	/**
+	 * Check to see if the player has played energy yet this turn
+	 *
+	 * @return true if the player has already played energy this turn
+	 */
+	public boolean hasPlayedEnergy() {
+		return playedEnergy;
+	}
+
+	/**
+	 * Set whether or not the player has attached energy this turn
+	 *
+	 * @param playedEnergy
+	 */
+	public void setPlayedEnergy(boolean playedEnergy) {
+		this.playedEnergy = playedEnergy;
+	}
+
 
 	/**
 	 * The reference to the player's deck

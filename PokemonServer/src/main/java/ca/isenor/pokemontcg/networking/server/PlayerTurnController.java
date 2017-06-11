@@ -129,7 +129,7 @@ public class PlayerTurnController {
 		}
 
 		synchronized(this) {
-			model.endTurn();
+			model.endTurn(playerNumber);
 			this.notifyAll();
 		}
 		return command;

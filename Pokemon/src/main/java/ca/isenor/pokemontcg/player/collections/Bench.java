@@ -13,11 +13,11 @@ import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 public class Bench implements Serializable {
 	private static final long serialVersionUID = -4685486583007035960L;
 
-	private LinkedList<Pokemon> bench;
+	private LinkedList<Pokemon> cards;
 	private int maxSize;
 
 	public Bench() {
-		bench = new LinkedList<>();
+		cards = new LinkedList<>();
 		maxSize = 5;
 	}
 
@@ -28,10 +28,20 @@ public class Bench implements Serializable {
 	 * @return true if the Pokemon was added to the bench; false otherwise
 	 */
 	public boolean add(Pokemon pokemon) {
-		if (bench.size() < maxSize) {
-			return bench.add(pokemon);
+		if (cards.size() < maxSize) {
+			return cards.add(pokemon);
 		}
 		return false;
+	}
+
+	/**
+	 * Gets the Pokemon without removing it from the bench
+	 *
+	 * @param index
+	 * @return the selected Pokemon
+	 */
+	public Pokemon get(int index) {
+		return cards.get(index);
 	}
 
 	/**
@@ -41,7 +51,7 @@ public class Bench implements Serializable {
 	 * @return the selected Pokemon
 	 */
 	public Pokemon remove(int index) {
-		return bench.remove(index);
+		return cards.remove(index);
 	}
 
 	/**
@@ -49,7 +59,7 @@ public class Bench implements Serializable {
 	 * @return the number of Pokemon on the bench
 	 */
 	public int size() {
-		return bench.size();
+		return cards.size();
 	}
 
 	public int maxSize() {
@@ -59,12 +69,12 @@ public class Bench implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder str = new StringBuilder();
-		if (bench.isEmpty()) {
+		if (cards.isEmpty()) {
 			return "0: -----";
 		}
-		for (int i = 1; i <= bench.size(); i++) {
-			str.append(i + ": " + bench.get(i-1));
-			if (i != bench.size()) {
+		for (int i = 1; i <= cards.size(); i++) {
+			str.append(i + ": " + cards.get(i-1));
+			if (i != cards.size()) {
 				str.append("\n");
 			}
 		}
