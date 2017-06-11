@@ -51,12 +51,12 @@ public class ServerPlayerThread extends Thread {
 			objectOutput = new ObjectOutputStream(socket.getOutputStream());
 			String inputLine;
 
-			controller.setPlayer(readPlayerData(),playerNumber);
+			controller.getModel().setPlayer(readPlayerData(),playerNumber);
 
-			out.println("Welcome Pokemon Trainer " + controller.getPlayer(playerNumber).getName() + "!");
-			out.println(controller.getPlayer(playerNumber).getDeck());
+			out.println("Welcome Pokemon Trainer " + controller.getModel().getPlayer(playerNumber).getName() + "!");
+			out.println(controller.getModel().getPlayer(playerNumber).getDeck());
 
-			if (playerNumber == controller.getPlayerTurn()) {
+			if (playerNumber == controller.getModel().getPlayerTurn()) {
 				out.println("Waiting for another player to join...");
 				controller.getLock().doWait();
 				out.println("Another player has joined.");
@@ -95,12 +95,12 @@ public class ServerPlayerThread extends Thread {
 
 			out.println("clearscreen");
 
-			controller.getPlayer(playerNumber).setPrizeCards();
+			controller.getModel().getPlayer(playerNumber).setPrizeCards();
 			out.println("Put the top " +
-					controller.getPlayer(playerNumber).getPrizeCards().getMaxPrizes() + " cards aside as prize cards.");
+					controller.getModel().getPlayer(playerNumber).getPrizeCards().getMaxPrizes() + " cards aside as prize cards.");
 			out.println("========================");
 			out.println("     Starting game!");
-			out.println("Opponent: " + controller.getPlayer((playerNumber + 1) % 2).getName());
+			out.println("Opponent: " + controller.getModel().getOpponentOf(playerNumber).getName());
 			out.println("========================");
 			boolean finished = false;
 			while(!finished && controller.getPlayerThread((playerNumber + 1) % 2) != null) {
@@ -134,7 +134,7 @@ public class ServerPlayerThread extends Thread {
 	}
 
 	private Player setupPlayer()  {
-		Player player = controller.getPlayer(playerNumber);
+		Player player = controller.getModel().getPlayer(playerNumber);
 		player.getDeck().shuffle();
 		setupHand(player);
 		while (player.getActive() == null) {
@@ -215,96 +215,112 @@ public class ServerPlayerThread extends Thread {
 	}
 
 	private void setupBench() throws IOException {
-		Player player = controller.getPlayer(playerNumber);
+		Player player = controller.getModel().getPlayer(playerNumber);
 		boolean success = false;
-		while (!success) {
-			out.println("clearscreen");
-			displayHand(player);
-			out.println("blankline");
-			displayBench(player);
-			final int arrayOffset = 1;
-			Bench bench = new Bench();
-			String numbers = player.getHand().isEmpty() ? "" : "1-" + (player.getHand().size());
+
+		out.println("clearscreen");
+		displayHand(player);
+		out.println("blankline");
+		displayBench(player);
+		Bench bench = new Bench();
+		String numbers = player.getHand().isEmpty() ? "" : "1-" + (player.getHand().size());
+		out.println("Available commands: active restart done " + numbers);
+		out.println("Pick basic Pokemon from your hand to be on your bench");
+		String input;
+		while (!success && (input = in.readLine()) != null) {
+			if ("active".equals(input)) {
+				multilineMessage("Your active Pokemon:\n" + player.getActive().longDescription());
+				in.readLine();
+			}
+			else if ("restart".equals(input) || "reset".equals(input)) {
+				out.println("Are you sure you want to start over? (y/n)");
+				String conf = in.readLine();
+				if (conf.startsWith("y")) {
+					resetBench(bench);
+				}
+			}
+			else if ("done".equals(input)) {
+				multilineMessage("Your bench:\n" + bench);
+				out.println("Are you sure you're done? (y/n)");
+				String conf = in.readLine();
+				if (conf.startsWith("y")) {
+					player.setBench(bench);
+					success = true;
+				}
+			}
+			else {
+				selectForBench(bench, input);
+			}
+
+			if (!success) {
+				continueBenchSelection(bench);
+			}
+
+		}
+	}
+
+	private void resetBench(Bench bench) {
+		while (bench.size() > 0) {
+			controller.getModel().getPlayer(playerNumber).getHand().add(bench.remove(0));
+		}
+	}
+
+	private void continueBenchSelection(Bench bench) {
+		Player player = controller.getModel().getPlayer(playerNumber);
+		String numbers = player.getHand().isEmpty() ? "" : "1-" + (player.getHand().size());
+		out.println("clearscreen");
+		displayHand(player);
+		out.println("blankline");
+		multilineMessage("Your bench:\n" + bench.toString());
+		if (bench.size() == bench.maxSize()) {
+			out.println("Available commands: active restart done");
+			out.println("You have a full bench. Type <done> to finalize selection");
+		}
+		else {
+			numbers = player.getHand().isEmpty() ? "" : "1-" + (player.getHand().size());
 			out.println("Available commands: active restart done " + numbers);
 			out.println("Pick basic Pokemon from your hand to be on your bench");
-			String input;
-			while (!success && (input = in.readLine()) != null) {
-				int selection;
-				if ("active".equals(input)) {
-					multilineMessage("Your active Pokemon:\n" + player.getActive().longDescription());
-					in.readLine();
-				}
-				else if ("restart".equals(input) || "reset".equals(input)) {
-					out.println("Are you sure you want to start over? (y/n)");
+		}
+	}
+
+	private void selectForBench(Bench bench, String input) throws IOException {
+		int selection;
+		final int arrayOffset = 1;
+		Player player = controller.getModel().getPlayer(playerNumber);
+
+		try {
+			selection = Integer.parseInt(input) - arrayOffset;
+			if (bench.size() == bench.maxSize()) {
+				out.println("You can't add anymore Pokemon to your bench.");
+				in.readLine();
+			}
+			else if (selection < player.getHand().size() && selection >= 0) {
+				Card card = player.getHand().getCard(selection);
+				String pokeName;
+				if (isBasicPokemon(card)) {
+					pokeName = ((Pokemon)card).getName();
+					out.println("You have selected " + pokeName + ".\nAre you sure? (y/n)");
 					String conf = in.readLine();
 					if (conf.startsWith("y")) {
-						while (bench.size() > 0) {
-							player.getHand().add(bench.remove(0));
-						}
-					}
-				}
-				else if ("done".equals(input)) {
-					multilineMessage("Your bench:\n" + bench);
-					out.println("Are you sure you're done? (y/n)");
-					String conf = in.readLine();
-					if (conf.startsWith("y")) {
-						player.setBench(bench);
-						success = true;
+						bench.add((Pokemon)player.getHand().remove(selection));
 					}
 				}
 				else {
-					try {
-						selection = Integer.parseInt(input) - arrayOffset;
-						if (bench.size() == bench.maxSize()) {
-							out.println("You can't add anymore Pokemon to your bench.");
-							in.readLine();
-						}
-						else if (selection < player.getHand().size() && selection >= 0) {
-							Card card = player.getHand().getCard(selection);
-							String pokeName;
-							if (isBasicPokemon(card)) {
-								pokeName = ((Pokemon)card).getName();
-								out.println("You have selected " + pokeName + ".\nAre you sure? (y/n)");
-								String conf = in.readLine();
-								if (conf.startsWith("y")) {
-									bench.add((Pokemon)player.getHand().remove(selection));
-
-								}
-							}
-							else {
-								out.println("That is an invalid selection: " + card.getName() + " is not a Basic Pokemon.");
-								out.println("<press enter>");
-								in.readLine();
-							}
-						}
-						else {
-							out.println("That is an invalid selection: " + (selection + arrayOffset) + " is not within range.");
-							out.println("<press enter>");
-							in.readLine();
-						}
-					}
-					catch (NumberFormatException e) {
-						out.println("Unrecognised command");
-						out.println("<press enter>");
-						in.readLine();
-					}
-				}
-				if (!success) {
-					out.println("clearscreen");
-					displayHand(player);
-					out.println("blankline");
-					multilineMessage("Your bench:\n" + bench.toString());
-					if (bench.size() == bench.maxSize()) {
-						out.println("Available commands: active restart done");
-						out.println("You have a full bench. Type <done> to finalize selection");
-					}
-					else {
-						numbers = player.getHand().isEmpty() ? "" : "1-" + (player.getHand().size());
-						out.println("Available commands: active restart done " + numbers);
-						out.println("Pick basic Pokemon from your hand to be on your bench");
-					}
+					out.println("That is an invalid selection: " + card.getName() + " is not a Basic Pokemon.");
+					out.println("<press enter>");
+					in.readLine();
 				}
 			}
+			else {
+				out.println("That is an invalid selection: " + (selection + arrayOffset) + " is not within range.");
+				out.println("<press enter>");
+				in.readLine();
+			}
+		}
+		catch (NumberFormatException e) {
+			out.println("Unrecognised command");
+			out.println("<press enter>");
+			in.readLine();
 		}
 	}
 
