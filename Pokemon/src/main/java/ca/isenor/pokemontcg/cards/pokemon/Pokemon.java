@@ -67,7 +67,6 @@ public abstract class Pokemon implements Card, Serializable {
 		return type;
 	}
 
-
 	@Override
 	public CardType getCardType() {
 		return cardType;
@@ -134,12 +133,13 @@ public abstract class Pokemon implements Card, Serializable {
 
 	@Override
 	public String toString() {
-		return name + " " + (hitPoints - damage) + "/" + hitPoints;
+		return name + " [" + (hitPoints - damage) + "/" + hitPoints + "]";
 	}
 
+	@Override
 	public String longDescription() {
 		return stage +  " " + type + " " + name + "[" + (hitPoints - damage) + "/" + hitPoints + "] " +
 				"\nAttack1\nAttack2" + "\nweakness: " + weakness + "\nresistance: " + resistance +
-				"\nretreat cost: " + retreatCost;
+				"\nretreat cost: " + retreatCost + "\nAttached energy:\n" + attachedEnergy;
 	}
 }
