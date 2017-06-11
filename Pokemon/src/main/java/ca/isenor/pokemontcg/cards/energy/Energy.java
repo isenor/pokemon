@@ -44,6 +44,11 @@ public abstract class Energy implements Card,Serializable {
 
 	@Override
 	public String toString() {
-		return "Energy [name=" + name + "]";
+		return name;
+	}
+
+	@Override
+	public String longDescription() {
+		return toString();
 	}
 }

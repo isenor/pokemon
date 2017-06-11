@@ -5,4 +5,5 @@ public interface Card {
 	CardType getCardType();
 	@Override
 	public String toString();
+	String longDescription();
 }
