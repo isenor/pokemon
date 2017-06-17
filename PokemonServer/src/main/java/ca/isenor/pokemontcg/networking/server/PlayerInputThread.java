@@ -259,13 +259,26 @@ public class PlayerInputThread extends Thread {
 				}
 			}
 			else if (card.getCardType() == CardType.POKEMON) {
-				out.println("Add Pokemon to bench..... not yet implemented");
+				benchingActions((Pokemon)card, input - arrayOffset);
+
 			}
 
 		}
 		else {
 			out.println("Index out of range: " + input);
 		}
+	}
+
+	private void benchingActions(Pokemon pokemon, int cardNumber) throws IOException {
+		Player player = controller.getModel().getPlayer(playerNumber);
+		PrintWriter out = thisPlayer.getOut();
+		out.println("Play " + pokemon + " to your bench? (y/n)");
+		String conf = thisPlayer.getIn().readLine();
+		if (conf.startsWith("y")) {
+			player.getBench().add((Pokemon)player.getHand().remove(cardNumber));
+			out.println("Added " + pokemon + " to bench");
+		}
+
 	}
 
 	private void energyActions(Energy energy, int cardNumber) throws IOException {
