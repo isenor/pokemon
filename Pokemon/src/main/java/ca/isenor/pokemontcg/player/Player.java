@@ -26,9 +26,10 @@ public class Player implements Serializable {
 	private PrizeCards prizeCards;
 	private Pokemon active;
 	private Bench bench;
-	private DiscardPile discard;
+	private DiscardPile discardPile;
 
 	private boolean playedEnergy;
+	private boolean retreated;
 
 	public Player(String name, Deck deck) {
 		this.name = name;
@@ -36,7 +37,7 @@ public class Player implements Serializable {
 		hand = new Hand();
 		prizeCards = new PrizeCards();
 		bench = new Bench();
-		discard = new DiscardPile();
+		discardPile = new DiscardPile();
 	}
 
 	/**
@@ -120,6 +121,15 @@ public class Player implements Serializable {
 	}
 
 	/**
+	 * Check to see if the player has retreated his/her active Pokemon yet this turn
+	 *
+	 * @return true if the player has retreated a Pokemon this turn; false otherwise
+	 */
+	public boolean hasRetreated() {
+		return retreated;
+	}
+
+	/**
 	 * Set whether or not the player has attached energy this turn
 	 *
 	 * @param playedEnergy
@@ -128,6 +138,14 @@ public class Player implements Serializable {
 		this.playedEnergy = playedEnergy;
 	}
 
+	/**
+	 * Set whether or not the player has retreated his/her active Pokemon this turn
+	 *
+	 * @param retreated
+	 */
+	public void setRetreated(boolean retreated) {
+		this.retreated = retreated;
+	}
 
 	/**
 	 * The reference to the player's deck
@@ -153,5 +171,9 @@ public class Player implements Serializable {
 	 */
 	public void setBench(Bench bench) {
 		this.bench = bench;
+	}
+
+	public DiscardPile getDiscardPile() {
+		return discardPile;
 	}
 }

@@ -10,13 +10,18 @@ public class DiscardPile implements Serializable {
 	 *
 	 */
 	private static final long serialVersionUID = -4646026323344798122L;
-	private LinkedList<Card> pile;
+	private LinkedList<Card> cards;
 
 	public DiscardPile() {
-		pile = new LinkedList<>();
+		cards = new LinkedList<>();
 	}
 
 	public void add(Card card) {
-		pile.add(card);
+		cards.add(card);
+	}
+
+	@Override
+	public String toString() {
+		return cards.toString();
 	}
 }

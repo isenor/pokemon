@@ -2,6 +2,7 @@ package ca.isenor.pokemontcg.player.collections;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.List;
 
 import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 /**
@@ -13,7 +14,7 @@ import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 public class Bench implements Serializable {
 	private static final long serialVersionUID = -4685486583007035960L;
 
-	private LinkedList<Pokemon> cards;
+	private List<Pokemon> cards;
 	private int maxSize;
 
 	public Bench() {
@@ -64,6 +65,10 @@ public class Bench implements Serializable {
 
 	public int maxSize() {
 		return maxSize;
+	}
+
+	public boolean isEmpty() {
+		return cards.size() == 0;
 	}
 
 	@Override

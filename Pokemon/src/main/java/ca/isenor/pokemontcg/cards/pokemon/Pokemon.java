@@ -2,6 +2,7 @@ package ca.isenor.pokemontcg.cards.pokemon;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.List;
 
 import ca.isenor.pokemontcg.cards.Card;
 import ca.isenor.pokemontcg.cards.CardType;
@@ -17,7 +18,7 @@ public abstract class Pokemon implements Card, Serializable {
 	private String name;
 	private PokemonCardDetails details;
 	private int damage;
-	private LinkedList<Energy> attachedEnergy;
+	private List<Energy> attachedEnergy;
 	private boolean knockedOut;
 	private String[] attackNames;
 
@@ -72,6 +73,26 @@ public abstract class Pokemon implements Card, Serializable {
 
 	public void attachEnergy(Energy energy) {
 		attachedEnergy.add(energy);
+	}
+
+	public Energy removeEnergy(int energyIndex) {
+		return attachedEnergy.remove(energyIndex);
+	}
+
+	public Energy getEnergy(int energyIndex) {
+		return attachedEnergy.get(energyIndex);
+	}
+
+	public List<Energy> getEnergyList() {
+		return new LinkedList<>(attachedEnergy);
+	}
+
+	public void setEnergyList(List<Energy> list) {
+		attachedEnergy = new LinkedList<>(list);
+	}
+
+	public int getEnergyListSize() {
+		return attachedEnergy.size();
 	}
 
 	public boolean isKnockedOut() {

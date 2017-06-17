@@ -49,6 +49,7 @@ public class GameModel {
 
 	public void endTurn(int playerNumber) {
 		getPlayer(playerNumber).setPlayedEnergy(false);
+		getPlayer(playerNumber).setRetreated(false);
 		turn++;
 	}
 
