@@ -1,4 +1,4 @@
-package ca.isenor.pokemontcg.cards.pokemon.water;
+package ca.isenor.pokemontcg.cards.pokemon.grass;
 
 import ca.isenor.pokemontcg.cards.Stage;
 import ca.isenor.pokemontcg.cards.Type;
@@ -6,34 +6,26 @@ import ca.isenor.pokemontcg.cards.energy.EnergyAmount;
 import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 import ca.isenor.pokemontcg.cards.pokemon.PokemonCardDetails;
 
-public class Squirtle extends Pokemon {
-	public Squirtle() {
-		super("Squirtle", new PokemonCardDetails(60, 1, Type.WATER, Type.GRASS, Type.NONE,
-				Stage.BASIC),
-				"Tackle");
-	}
+public class Bulbasaur extends Pokemon {
 
+	public Bulbasaur() {
+		super("Bulbasaur",
+				new PokemonCardDetails(40, 1, Type.GRASS, Type.FIRE, Type.NONE, Stage.BASIC),
+				"Leech Seed");
+	}
 	@Override
 	public void attack(int attackNumber, Pokemon opponent) {
-		switch(attackNumber) {
-		case 0:
-			doDamage(opponent,10);
-			break;
-
-		default:
+		if (attackNumber == 0) {
+			doDamage(opponent,20);
 		}
 	}
 
 	@Override
 	public EnergyAmount getAttackCost(int attackNumber) {
 		EnergyAmount energy = new EnergyAmount();
-		switch(attackNumber) {
-		case 0:
-			energy.setEntry(Type.COLORLESS, 1);
-			break;
-		default:
+		if (attackNumber == 0) {
+			energy.setEntry(Type.GRASS,2);
 		}
-
 		return energy;
 	}
 }

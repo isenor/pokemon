@@ -1,10 +1,13 @@
 package ca.isenor.pokemontcg.networking.server;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import ca.isenor.pokemontcg.cards.Card;
 import ca.isenor.pokemontcg.cards.CardType;
 import ca.isenor.pokemontcg.cards.energy.Energy;
+import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
 import ca.isenor.pokemontcg.player.Player;
 
 /**
@@ -16,6 +19,10 @@ import ca.isenor.pokemontcg.player.Player;
  *
  */
 public class PlayerInputThread extends Thread {
+	private static final String HAND = "hand";
+	private static final String BENCH = "bench";
+	private static final String ACTIVE = "active";
+
 	private PlayerTurnController controller;
 	private int playerNumber;
 	private ServerPlayerThread thisPlayer;
@@ -45,10 +52,10 @@ public class PlayerInputThread extends Thread {
 				System.out.println("Player" + playerNumber + ": \"" + message + "\"");
 				Player player = controller.getModel().getPlayer(playerNumber);
 				if (message.startsWith("chat")) {
-					otherPlayer.getOut().println(player.getName() + ": " + message.substring(5));
+					otherPlayer.getOut().println(player.getName() + ": " + message.substring("chat".length()).trim());
 				}
 				else if (message.startsWith("opp")) {
-					oppCommands(message.substring(4));
+					oppCommands(message.substring("opp".length()).trim());
 				}
 				else if (message.startsWith("quit")) {
 					otherPlayer.getOut().println(player.getName() + " has left the game.");
@@ -56,7 +63,7 @@ public class PlayerInputThread extends Thread {
 					System.out.println("Ending player input thread for Player" + playerNumber);
 				}
 				else if (message.startsWith("select") && controller.getModel().getPlayerTurn() == playerNumber) {
-					selectCommands(message.substring("select".length() + 1));
+					selectCommands(message.substring("select".length()).trim());
 				}
 				else if ("clear".equals(message)) {
 					thisPlayer.getOut().println("clearscreen");
@@ -69,19 +76,19 @@ public class PlayerInputThread extends Thread {
 					thisPlayer.getOut().println("\nYou have " + player.getPrizeCards().size() + " prize cards left.");
 					System.out.println("Player" + playerNumber + " counted his/her prize cards.");
 				}
-				else if ("bench".equals(message)) {
+				else if (BENCH.equals(message)) {
 					thisPlayer.getOut().println("multiline");
 					thisPlayer.getOut().println(player.getBench());
 					thisPlayer.getOut().println("complete");
 					System.out.println("Player" + playerNumber + " looked at his/her bench.");
 				}
-				else if ("hand".equals(message)) {
+				else if (HAND.equals(message)) {
 					thisPlayer.getOut().println("multiline");
 					thisPlayer.getOut().println(player.getHand());
 					thisPlayer.getOut().println("complete");
 					System.out.println("Player" + playerNumber + " looked at his/her hand.");
 				}
-				else if ("active".equals(message)) {
+				else if (ACTIVE.equals(message)) {
 					thisPlayer.getOut().println("multiline");
 					thisPlayer.getOut().println("Active Pokemon:\n" + player.getActive().longDescription());
 					thisPlayer.getOut().println("complete");
@@ -113,17 +120,17 @@ public class PlayerInputThread extends Thread {
 	private void oppCommands(String message) {
 		Player opp = controller.getModel().getOpponentOf(playerNumber);
 		PrintWriter out = thisPlayer.getOut();
-		if ("bench".equals(message)) {
+		if (BENCH.equals(message)) {
 			out.println("\n" + opp.getName() + "'s bench:");
 			out.println(opp.getBench());
 			System.out.println("Player" + playerNumber + " looked at his/her opponent's bench.");
 		}
-		else if ("active".equals(message)) {
+		else if (ACTIVE.equals(message)) {
 			out.println("\n" + opp.getName() + "'s active Pokemon:");
 			out.println(opp.getActive().longDescription());
 			System.out.println("Player" + playerNumber + " looked at his/her opponent's active Pokemon.");
 		}
-		else if ("hand".equals(message)) {
+		else if (HAND.equals(message)) {
 			out.println("\n" + opp.getName() + "'s hand has " + opp.getHand().size() + " cards in it.");
 			System.out.println("Player" + playerNumber + " counted the cards in his/her opponent's hand.");
 		}
@@ -136,28 +143,93 @@ public class PlayerInputThread extends Thread {
 			System.out.println("Player" + playerNumber + " counted the cards in his/her opponent's deck.");
 		}
 		else {
-
+			out.println("unexpected command argument: " + message);
 		}
 	}
 
 	private void selectCommands(String message) throws IOException {
 		Player player = controller.getModel().getPlayer(playerNumber);
 		PrintWriter out = thisPlayer.getOut();
-		if ("active".equals(message.trim())) {
-			out.println("\nActive:" + player.getActive().longDescription());
-			out.println("Actions:");
-			if (controller.getModel().getTurn() != 0) {
-				out.println("Attack1\nAttack2");
-			}
+		if ("".equals(message.trim())) {
+			out.println("Select from the following:");
+			out.println(ACTIVE + "\n" + HAND + "\n" + BENCH);
+			message = thisPlayer.getIn().readLine();
 		}
-		else if (message.startsWith("bench")) {
+
+		if (ACTIVE.equals(message.trim())) {
+			Pokemon active = player.getActive();
+			activePokemonActions(active);
+
+		}
+		else if (message.startsWith(BENCH)) {
 			out.println("select bench x");
 		}
-		else if (message.startsWith("hand")) {
-			handCommands(message.substring("hand".length() + 1));
+		else if (message.startsWith(HAND)) {
+			if (message.length() > HAND.length()) {
+				handCommands(message.substring(HAND.length()).trim());
+			}
+			else {
+				out.println(player.getHand());
+				out.println("\nSelect a card from your hand:");
+				String input = thisPlayer.getIn().readLine();
+				handCommands(input);
+			}
 		}
 		else {
-			out.println("unknown command");
+			out.println("unknown command: " + message);
+		}
+	}
+
+	private void activePokemonActions(Pokemon active) throws IOException {
+		PrintWriter out = thisPlayer.getOut();
+		out.println("\nActive:" + active.longDescription());
+		out.println("Actions:");
+		int actionNumber = 1;
+		Map<Integer,String> actionMap = new HashMap<>();
+		if (controller.getModel().getTurn() != 0) {
+			final int arrayOffset = 1;
+			for (int attackNumber = 0; attackNumber < active.getNumberOfAttacks(); attackNumber++) {
+				if (active.checkEnergy(active.getAttackCost(attackNumber))) {
+					out.println((attackNumber + arrayOffset) + ": attack with " + active.getAttackName(attackNumber));
+					actionMap.put(actionNumber,"attack");
+					actionNumber++;
+				}
+			}
+			if (active.checkEnergy(active.getRetreatCost())) {
+				out.println((actionNumber) + ": retreat");
+				actionMap.put(actionNumber,"retreat");
+				actionNumber++;
+			}
+		}
+		if (actionNumber == 1) {
+			out.println("none");
+		}
+		else {
+			out.println((actionNumber) + ": no action");
+			String input = "";
+			try {
+				input = thisPlayer.getIn().readLine();
+				int selection = Integer.parseInt(input);
+				String action = actionMap.get(selection);
+				if ("attack".equals(action)) {
+					int attackNumber = selection - 1;
+					out.println("\nAttack with " + active.getAttackName(attackNumber) + "?");
+					String conf = thisPlayer.getIn().readLine();
+					if (conf.startsWith("y")) {
+						Pokemon opponent = controller.getModel().getOpponentOf(playerNumber).getActive();
+						active.attack(attackNumber, opponent);
+						out.println(active.getName() + " attacked " + opponent.getName() + "!!!");
+						otherPlayer.getOut().println(opponent.getName() + " was attacked by " + active.getName() + "!!!");
+						System.out.println(active.getName() + " attacked " + opponent.getName() + "!!!");
+						thisPlayer.setCmd("done");
+					}
+				} else if ("retreat".equals(action)) {
+					out.println("retreating... not implemented yet.");
+				}
+			}
+			catch (NumberFormatException e) {
+				out.println("unexpected command argument: " + input);
+			}
 		}
 	}
 
@@ -187,7 +259,7 @@ public class PlayerInputThread extends Thread {
 				}
 			}
 			else if (card.getCardType() == CardType.POKEMON) {
-
+				out.println("Add Pokemon to bench..... not yet implemented");
 			}
 
 		}
@@ -206,7 +278,16 @@ public class PlayerInputThread extends Thread {
 			out.println((i + arrayOffset) + ": attach to benched " + player.getBench().get(i));
 		}
 		out.println((i + arrayOffset) + ": don't attach " + energy.getName());
-		int selection = Integer.parseInt(thisPlayer.getIn().readLine());
+		int selection = -1;
+		String input = "";
+		try {
+			input = thisPlayer.getIn().readLine();
+			selection = Integer.parseInt(input);
+		}
+		catch (NumberFormatException e) {
+			out.println("unexpected command argument:" + input);
+			return;
+		}
 		if (selection == 1) {
 			out.println("\nAttach " + energy.getName() + " to " + player.getActive() + "? (y/n)");
 			String conf = thisPlayer.getIn().readLine();
@@ -225,8 +306,6 @@ public class PlayerInputThread extends Thread {
 			}
 			return;
 		}
-
 		out.println("\nNo action taken");
-
 	}
 }

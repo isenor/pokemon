@@ -327,7 +327,7 @@ public class ServerPlayerThread extends Thread {
 	private boolean isBasicPokemon(Card card) {
 		if (card.getCardType() == CardType.POKEMON) {
 			Pokemon pokemon = (Pokemon)card;
-			return pokemon.getStage() == Stage.BASIC;
+			return pokemon.getDetails().getStage() == Stage.BASIC;
 		}
 		return false;
 	}

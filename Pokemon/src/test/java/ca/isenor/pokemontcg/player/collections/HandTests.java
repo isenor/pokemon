@@ -13,8 +13,10 @@ import org.junit.Test;
 import ca.isenor.pokemontcg.cards.Card;
 import ca.isenor.pokemontcg.cards.Stage;
 import ca.isenor.pokemontcg.cards.Type;
+import ca.isenor.pokemontcg.cards.energy.EnergyAmount;
 import ca.isenor.pokemontcg.cards.energy.fire.BasicFireEnergy;
 import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
+import ca.isenor.pokemontcg.cards.pokemon.PokemonCardDetails;
 
 public class HandTests {
 
@@ -23,14 +25,29 @@ public class HandTests {
 	private class GenericBasic extends Pokemon {
 
 		public GenericBasic() {
-			super("GenericBasic", 100, 3, Type.COLORLESS, Type.COLORLESS, Type.COLORLESS, Stage.BASIC);
+			super("GenericBasic",
+					new PokemonCardDetails(100, 3, Type.COLORLESS, Type.COLORLESS, Type.COLORLESS, Stage.BASIC));
 		}
+
+		@Override
+		public void attack(int attackNumber, Pokemon opponent) {}
+
+		@Override
+		public EnergyAmount getAttackCost(int attackNumber) {return null;}
+
 	}
 
 	private class GenericNonBasic extends Pokemon {
 		public GenericNonBasic() {
-			super("GenericNonBasic", 100, 3, Type.COLORLESS, Type.COLORLESS, Type.COLORLESS, Stage.STAGE1);
+			super("GenericNonBasic",
+					new PokemonCardDetails(100, 3, Type.COLORLESS, Type.COLORLESS, Type.COLORLESS, Stage.STAGE1));
 		}
+
+		@Override
+		public void attack(int attackNumber, Pokemon opponent) {}
+
+		@Override
+		public EnergyAmount getAttackCost(int attackNumber) {return null;}
 	}
 
 	@Before

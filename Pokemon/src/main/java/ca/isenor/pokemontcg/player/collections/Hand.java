@@ -78,7 +78,7 @@ public class Hand implements Serializable {
 		Iterator<Card> iterator = cards.iterator();
 		do {
 			Card curr = iterator.next();
-			if (curr.getCardType() == CardType.POKEMON && ((Pokemon)curr).getStage() == Stage.BASIC) {
+			if (curr.getCardType() == CardType.POKEMON && ((Pokemon)curr).getDetails().getStage() == Stage.BASIC) {
 				basicExists = true;
 			}
 		} while (iterator.hasNext());

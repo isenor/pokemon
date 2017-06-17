@@ -5,66 +5,31 @@ import java.util.LinkedList;
 
 import ca.isenor.pokemontcg.cards.Card;
 import ca.isenor.pokemontcg.cards.CardType;
-import ca.isenor.pokemontcg.cards.Stage;
 import ca.isenor.pokemontcg.cards.Type;
 import ca.isenor.pokemontcg.cards.energy.Energy;
+import ca.isenor.pokemontcg.cards.energy.EnergyAmount;
 
 public abstract class Pokemon implements Card, Serializable {
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 5432201733525003969L;
 
 	private static final CardType cardType = CardType.POKEMON;
 
 	private String name;
-	private int hitPoints;
+	private PokemonCardDetails details;
 	private int damage;
-	private int retreatCost;
-	private Type type;
-	private Type weakness;
-	private Type resistance;
-	private Stage stage;
 	private LinkedList<Energy> attachedEnergy;
 	private boolean knockedOut;
+	private String[] attackNames;
 
 	public Pokemon(String name,
-			int hitPoints,
-			int retreatCost,
-			Type type,
-			Type weakness,
-			Type resistance,
-			Stage stage) {
+			PokemonCardDetails details,
+			String... attackNames) {
 		this.name = name;
-		this.hitPoints = hitPoints;
 		this.damage = 0;
-		this.type = type;
-		this.retreatCost = retreatCost;
-		this.weakness = weakness;
-		this.resistance = resistance;
-		this.stage = stage;
 		attachedEnergy = new LinkedList<>();
 		knockedOut = false;
-	}
-
-	public int getHitPoints() {
-		return hitPoints;
-	}
-
-	public void setHitPoints(int hitPoints) {
-		this.hitPoints = hitPoints;
-	}
-
-	public int getRetreatCost() {
-		return retreatCost;
-	}
-
-	public void setRetreatCost(int retreatCost) {
-		this.retreatCost = retreatCost;
-	}
-
-	public Type getType() {
-		return type;
+		this.attackNames = attackNames;
+		this.details = details;
 	}
 
 	@Override
@@ -72,41 +37,27 @@ public abstract class Pokemon implements Card, Serializable {
 		return cardType;
 	}
 
-	public void setType(Type type) {
-		this.type = type;
-	}
-
-	public Type getWeakness() {
-		return weakness;
-	}
-
-	public void setWeakness(Type weakness) {
-		this.weakness = weakness;
-	}
-
-	public Type getResistance() {
-		return resistance;
-	}
-
-	public void setResistance(Type resistance) {
-		this.resistance = resistance;
-	}
-
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	public PokemonCardDetails getDetails() {
+		return details;
 	}
 
 	public int getDamage() {
 		return damage;
 	}
 
-	public Stage getStage() {
-		return stage;
-	}
-
 	public void retreat() {
 		// check energy levels
+	}
+
+	public EnergyAmount getRetreatCost() {
+		EnergyAmount energy = new EnergyAmount();
+		energy.setEntry(Type.COLORLESS, details.getRetreatCost());
+		return energy;
 	}
 
 	public void doDamage(Pokemon pokemon, int damage) {
@@ -131,15 +82,36 @@ public abstract class Pokemon implements Card, Serializable {
 		this.knockedOut = knockedOut;
 	}
 
+	public boolean checkEnergy(EnergyAmount energy) {
+		EnergyAmount thisPokemon = new EnergyAmount(attachedEnergy);
+		return thisPokemon.meetsRequirementsOf(energy);
+	}
+
+	public String getAttackName(int attackNumber) {
+		return attackNames[attackNumber];
+	}
+
+	public int getNumberOfAttacks() {
+		return attackNames.length;
+	}
+
+	public abstract void attack(int attackNumber, Pokemon opponent);
+
+	public abstract EnergyAmount getAttackCost(int attackNumber);
+
 	@Override
 	public String toString() {
-		return name + " [" + (hitPoints - damage) + "/" + hitPoints + "]";
+		return name + " [" + (details.getHitPoints() - damage) + "/" + details.getHitPoints() + "]";
 	}
 
 	@Override
 	public String longDescription() {
-		return stage +  " " + type + " " + name + "[" + (hitPoints - damage) + "/" + hitPoints + "] " +
-				"\nAttack1\nAttack2" + "\nweakness: " + weakness + "\nresistance: " + resistance +
-				"\nretreat cost: " + retreatCost + "\nAttached energy:\n" + attachedEnergy;
+		StringBuilder attacks = new StringBuilder();
+		for (String AttackName : attackNames) {
+			attacks.append(AttackName + "\n");
+		}
+		return details.getStage() +  " " + details.getType() + " " + name + "[" + (details.getHitPoints() - damage) + "/" + details.getHitPoints() + "]\n" +
+		attacks + "\nweakness: " + details.getWeakness() + "\nresistance: " + details.getResistance() +
+		"\nretreat cost: " + details.getRetreatCost() + "\nAttached energy:\n" + attachedEnergy;
 	}
 }

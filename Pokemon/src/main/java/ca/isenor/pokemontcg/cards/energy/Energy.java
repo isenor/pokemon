@@ -17,11 +17,20 @@ public abstract class Energy implements Card,Serializable {
 	private String name;
 	private Type type;
 	private boolean basic;
+	private int amount;
 
 	public Energy(String name, Type type, boolean basic) {
 		this.name = name;
 		this.type = type;
 		this.basic = basic;
+		this.amount = 1;
+	}
+
+	public Energy(String name, Type type, boolean basic, int amount) {
+		this.name = name;
+		this.type = type;
+		this.basic = basic;
+		this.amount = amount;
 	}
 
 	@Override
@@ -40,6 +49,10 @@ public abstract class Energy implements Card,Serializable {
 
 	public boolean isBasic() {
 		return basic;
+	}
+
+	public int getAmount() {
+		return amount;
 	}
 
 	@Override

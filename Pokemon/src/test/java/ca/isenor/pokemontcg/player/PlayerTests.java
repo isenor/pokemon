@@ -11,7 +11,9 @@ import org.powermock.api.easymock.PowerMock;
 import ca.isenor.pokemontcg.cards.Card;
 import ca.isenor.pokemontcg.cards.Stage;
 import ca.isenor.pokemontcg.cards.Type;
+import ca.isenor.pokemontcg.cards.energy.EnergyAmount;
 import ca.isenor.pokemontcg.cards.pokemon.Pokemon;
+import ca.isenor.pokemontcg.cards.pokemon.PokemonCardDetails;
 import ca.isenor.pokemontcg.cards.pokemon.fire.Charmander;
 import ca.isenor.pokemontcg.player.collections.Deck;
 
@@ -75,9 +77,15 @@ public class PlayerTests {
 	 */
 	private class Fakeon extends Pokemon {
 		public Fakeon() {
-			super("Fakeon", 120, 3, Type.FIGHTING, Type.FAIRY, Type.NONE,
-					Stage.STAGE1);
+			super("Fakeon", new PokemonCardDetails(120, 3, Type.FIGHTING, Type.FAIRY, Type.NONE,
+					Stage.STAGE1));
 		}
+
+		@Override
+		public void attack(int attackNumber, Pokemon opponent) {}
+
+		@Override
+		public EnergyAmount getAttackCost(int attackNumber) {return null;}
 	}
 
 	@Test
