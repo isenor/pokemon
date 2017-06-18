@@ -2,6 +2,7 @@ package ca.isenor.pokemontcg.networking.server;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ca.isenor.pokemontcg.cards.Card;
@@ -22,6 +23,8 @@ public class PlayerInputThread extends Thread {
 	private static final String HAND = "hand";
 	private static final String BENCH = "bench";
 	private static final String ACTIVE = "active";
+	private static final String DISCARD = "discard";
+	private static final String CLEAR_SCREEN = "clearscreen";
 
 	private PlayerTurnController controller;
 	private int playerNumber;
@@ -66,7 +69,7 @@ public class PlayerInputThread extends Thread {
 					selectCommands(message.substring("select".length()).trim());
 				}
 				else if ("clear".equals(message)) {
-					thisPlayer.getOut().println("clearscreen");
+					thisPlayer.getOut().println(CLEAR_SCREEN);
 				}
 				else if ("deck".equals(message)) {
 					thisPlayer.getOut().println("\nYou have " + player.getDeck().size() + " cards left in your deck.");
@@ -75,6 +78,10 @@ public class PlayerInputThread extends Thread {
 				else if ("prizes".equals(message)) {
 					thisPlayer.getOut().println("\nYou have " + player.getPrizeCards().size() + " prize cards left.");
 					System.out.println("Player" + playerNumber + " counted his/her prize cards.");
+				}
+				else if (DISCARD.equals(message)) {
+					thisPlayer.getOut().println(player.getDiscardPile());
+					System.out.println("Player" + playerNumber + " looked at his/her discard pile.");
 				}
 				else if (BENCH.equals(message)) {
 					thisPlayer.getOut().println("multiline");
@@ -117,6 +124,10 @@ public class PlayerInputThread extends Thread {
 		thisPlayer.getOut().println("quit");
 	}
 
+	/**
+	 *
+	 * @param message
+	 */
 	private void oppCommands(String message) {
 		Player opp = controller.getModel().getOpponentOf(playerNumber);
 		PrintWriter out = thisPlayer.getOut();
@@ -147,6 +158,11 @@ public class PlayerInputThread extends Thread {
 		}
 	}
 
+	/**
+	 *
+	 * @param message
+	 * @throws IOException
+	 */
 	private void selectCommands(String message) throws IOException {
 		Player player = controller.getModel().getPlayer(playerNumber);
 		PrintWriter out = thisPlayer.getOut();
@@ -180,7 +196,13 @@ public class PlayerInputThread extends Thread {
 		}
 	}
 
+	/**
+	 *
+	 * @param active
+	 * @throws IOException
+	 */
 	private void activePokemonActions(Pokemon active) throws IOException {
+		Player player = controller.getModel().getPlayer(playerNumber);
 		PrintWriter out = thisPlayer.getOut();
 		out.println("\nActive:" + active.longDescription());
 		out.println("Actions:");
@@ -195,7 +217,9 @@ public class PlayerInputThread extends Thread {
 					actionNumber++;
 				}
 			}
-			if (active.checkEnergy(active.getRetreatCost())) {
+			if (active.checkEnergy(active.getRetreatCost())
+					&& !player.getBench().isEmpty()
+					&& !player.hasRetreated()) {
 				out.println((actionNumber) + ": retreat");
 				actionMap.put(actionNumber,"retreat");
 				actionNumber++;
@@ -224,7 +248,8 @@ public class PlayerInputThread extends Thread {
 						thisPlayer.setCmd("done");
 					}
 				} else if ("retreat".equals(action)) {
-					out.println("retreating... not implemented yet.");
+					retreatActions(active);
+
 				}
 			}
 			catch (NumberFormatException e) {
@@ -233,6 +258,79 @@ public class PlayerInputThread extends Thread {
 		}
 	}
 
+	/**
+	 *
+	 * @param active
+	 * @throws IOException
+	 */
+	private void retreatActions(Pokemon active) throws IOException {
+		Player player = controller.getModel().getPlayer(playerNumber);
+		PrintWriter out = thisPlayer.getOut();
+		int arrayOffset = 1;
+		int swapIndex = -1;
+		boolean success = false;
+		while (!success) {
+			out.println("\nYour bench:");
+			out.println(player.getBench());
+			out.println("Choose a Pokemon from your bench to replace " + active.getName());
+			String input = thisPlayer.getIn().readLine();
+			int selection = Integer.parseInt(input); // TODO: catch NumberFormatException
+
+			out.println("\nRetreat " + active.getName() + " for " + player.getBench().get(selection - arrayOffset).getName() + "? (y/n)");
+			String conf = thisPlayer.getIn().readLine();
+			if (conf.startsWith("y")) {
+				swapIndex = selection - arrayOffset;
+				success = true;
+			}
+			else {
+				out.println(CLEAR_SCREEN);
+			}
+		}
+
+		int discards = 0;
+		int toDiscard[] = new int[active.getDetails().getRetreatCost()];
+		List<Energy> workingList = active.getEnergyList();
+		while (discards < active.getDetails().getRetreatCost()) {
+			for (int i = 0; i < active.getEnergyListSize(); i++) {
+				out.println((i + 1) + ": " + active.getEnergy(i));
+			}
+			out.println("Choose an energy to discard");
+			String input = thisPlayer.getIn().readLine();
+			int selection = Integer.parseInt(input); // TODO: catch NumberFormatException
+			out.println("Discard " + active.getEnergy(selection - arrayOffset) + " to retreat " + active.getName() + "? (y/n)");
+			String conf = thisPlayer.getIn().readLine();
+			if (conf.startsWith("y")) {
+				workingList.remove(selection - arrayOffset);
+				toDiscard[discards] = selection - arrayOffset;
+				discards++;
+			}
+		}
+		out.println("Preparing to discard:");
+		for (int energyIndex : toDiscard) {
+			out.println(active.getEnergy(energyIndex));
+		}
+		out.println("Is this alright? (y/n)");
+		String conf = thisPlayer.getIn().readLine();
+		if (conf.startsWith("y")) {
+			for (int energyIndex : toDiscard) {
+				player.getDiscardPile().add(active.removeEnergy(energyIndex));
+			}
+			active.setEnergyList(workingList);
+			Pokemon oldActive = player.getActive();
+			player.setActive(player.getBench().remove(swapIndex));
+			player.getBench().add(oldActive);
+			player.setRetreated(true);
+		}
+		else {
+			out.println("No retreat performed");
+		}
+	}
+
+	/**
+	 *
+	 * @param message
+	 * @throws IOException
+	 */
 	private void handCommands(String message) throws IOException {
 		Player player = controller.getModel().getPlayer(playerNumber);
 		PrintWriter out = thisPlayer.getOut();
@@ -267,6 +365,12 @@ public class PlayerInputThread extends Thread {
 		}
 	}
 
+	/**
+	 *
+	 * @param pokemon
+	 * @param cardNumber
+	 * @throws IOException
+	 */
 	private void benchingActions(Pokemon pokemon, int cardNumber) throws IOException {
 		Player player = controller.getModel().getPlayer(playerNumber);
 		PrintWriter out = thisPlayer.getOut();
@@ -284,6 +388,12 @@ public class PlayerInputThread extends Thread {
 
 	}
 
+	/**
+	 *
+	 * @param energy
+	 * @param cardNumber
+	 * @throws IOException
+	 */
 	private void energyActions(Energy energy, int cardNumber) throws IOException {
 		Player player = controller.getModel().getPlayer(playerNumber);
 		PrintWriter out = thisPlayer.getOut();
