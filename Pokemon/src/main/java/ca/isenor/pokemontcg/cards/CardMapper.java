@@ -9,6 +9,7 @@ import ca.isenor.pokemontcg.cards.energy.water.BasicWaterEnergy;
 import ca.isenor.pokemontcg.cards.pokemon.fire.Charmander;
 import ca.isenor.pokemontcg.cards.pokemon.fire.Fennekin;
 import ca.isenor.pokemontcg.cards.pokemon.grass.Bulbasaur;
+import ca.isenor.pokemontcg.cards.pokemon.water.CandleWind;
 import ca.isenor.pokemontcg.cards.pokemon.water.Froakie;
 import ca.isenor.pokemontcg.cards.pokemon.water.Squirtle;
 
@@ -32,6 +33,7 @@ public class CardMapper {
 		cardMap.put("Froakie", new Froakie());
 		cardMap.put("Squirtle", new Squirtle());
 		cardMap.put("Bulbasaur", new Bulbasaur());
+		cardMap.put("CandleWind", new CandleWind());
 		return cardMap;
 	}
 }
